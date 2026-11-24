@@ -8,279 +8,351 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+  /* v2 — re-design após avaliação heurística e de acessibilidade */
   :root{
-    --rose:#b5577f; --rose-dark:#9d4569; --rose-soft:#fbe4ed; --rose-softer:#fdf0f5;
-    --green:#4c8b5f; --green-dark:#3e7650; --green-soft:#dff1e4; --green-text:#2f7d47;
-    --amber-soft:#fcefcf; --amber-text:#a26a06; --amber-border:#f5dfa5;
-    --ink:#2f2328; --ink-2:#4a3d43; --muted:#8c7c84; --line:#f0e1e7; --field:#e9dce2;
+    --rose:#a84c74; --rose-dark:#913d62; --rose-text:#93395f; --rose-soft:#fbe4ed; --rose-softer:#fdf0f5;
+    --green:#3b7049; --green-dark:#305d3c; --green-soft:#dff1e4; --green-text:#22633a;
+    --amber-soft:#fcefcf; --amber-text:#7a4f00; --amber-border:#f0d48c;
+    --ink:#2f2328; --ink-2:#4a3d43; --muted:#6b5c63; --ph:#76676e; --line:#f0e1e7; --field:#9c8791;
+    --err:#b4372f; --err-soft:#fde3e3;
     --bg:#fdf5f8; --side:#fcebf2; --card:#fff;
-    --shadow:0 2px 10px rgba(181,87,127,.08), 0 1px 2px rgba(181,87,127,.06);
+    --shadow:0 2px 10px rgba(168,76,116,.08), 0 1px 2px rgba(168,76,116,.06);
     --radius:16px;
   }
   *{box-sizing:border-box}
   html,body{margin:0;height:100%}
   body{font-family:'Nunito',system-ui,sans-serif;color:var(--ink);background:var(--bg);font-size:14px;-webkit-font-smoothing:antialiased}
   .serif{font-family:'Lora',Georgia,serif}
-  button,input,select,textarea{font-family:inherit;font-size:13px;color:var(--ink)}
+  button,input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
   button{cursor:pointer}
+  :focus-visible{outline:3px solid #2f6fd6;outline-offset:2px}
   svg.i{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
   /* ---------- LOGIN ---------- */
-  #login{position:fixed;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 21% 0 5%;
+  #login{position:fixed;inset:0;overflow:auto;display:flex;align-items:center;justify-content:space-between;gap:40px;padding:40px 21% 40px 5%;
     background:radial-gradient(ellipse at 100% 100%, #dff2e3 0%, rgba(223,242,227,0) 45%),
                linear-gradient(135deg,#f9d9e6 0%,#fcebf2 40%,#fdf4f7 70%,#f3f8f1 100%)}
-  #login .hero{max-width:360px}
+  #login .hero{max-width:380px}
   #login .logo{width:52px;height:52px;border-radius:50%;background:var(--rose);display:grid;place-items:center;margin-bottom:26px}
   #login .logo svg{width:24px;height:24px;fill:#fff;stroke:none}
-  #login h1{font-family:'Lora',serif;font-weight:600;font-size:40px;line-height:1.2;margin:0 0 22px;color:var(--ink)}
+  #login h1{font-family:'Lora',serif;font-weight:600;font-size:40px;line-height:1.2;margin:0 0 22px}
   #login .hero p{color:var(--muted);font-size:15px;line-height:1.55;margin:0}
-  .login-card{width:370px;background:#fff;border-radius:18px;box-shadow:0 10px 40px rgba(181,87,127,.12);padding:32px 32px 30px}
+  .login-card{width:370px;flex:none;background:#fff;border-radius:18px;box-shadow:0 10px 40px rgba(168,76,116,.12);padding:32px}
   .login-card h2{font-family:'Lora',serif;font-weight:600;font-size:26px;margin:0 0 4px}
-  .login-card .sub{color:var(--muted);font-size:13px;margin-bottom:28px}
-  .login-row{display:flex;justify-content:space-between;align-items:center;margin:12px 0 26px;font-size:12px}
+  .login-card .sub{color:var(--muted);font-size:14px;margin-bottom:26px}
+  .login-row{display:flex;justify-content:space-between;align-items:center;margin:12px 0 24px;font-size:13px}
   .login-row label{display:flex;gap:8px;align-items:center;color:var(--ink-2)}
-  .login-row a{color:var(--rose);text-decoration:none}
-  .login-error{color:#c0392b;font-size:12px;margin-top:-14px;margin-bottom:12px;display:none}
+  .linkbtn{background:none;border:0;padding:0;color:var(--rose-text);font-weight:600;text-decoration:underline;font-size:13px}
 
   /* ---------- APP SHELL ---------- */
-  #app{display:none;min-height:100vh}
+  #app{display:none;min-height:100vh;background:linear-gradient(to right,var(--side) 240px,var(--bg) 240px)}
   #app.on{display:flex}
-  #app{background:linear-gradient(to right,var(--side) 240px,var(--bg) 240px)}
-  aside{width:240px;flex:none;background:var(--side);padding:20px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+  aside{width:240px;flex:none;background:var(--side);padding:20px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
   .brand{display:flex;gap:12px;align-items:center;padding:4px 6px 20px}
   .brand .logo{width:38px;height:38px;border-radius:50%;background:var(--rose);display:grid;place-items:center}
   .brand .logo svg{width:18px;height:18px;fill:#fff;stroke:none}
   .brand b{font-family:'Lora',serif;font-weight:600;font-size:17px;display:block}
-  .brand small{color:var(--muted);font-size:11px}
-  .nav-sec{font-size:10.5px;font-weight:800;letter-spacing:.06em;color:var(--muted);margin:20px 10px 8px;text-transform:uppercase}
-  .nav a{display:flex;align-items:center;gap:12px;padding:10px 12px;margin:2px 0;border-radius:10px;color:var(--ink-2);text-decoration:none;font-size:13.5px;font-weight:500;cursor:pointer}
+  .brand small{color:var(--muted);font-size:12px}
+  .nav-sec{font-size:12px;font-weight:800;letter-spacing:.05em;color:var(--muted);margin:20px 10px 8px;text-transform:uppercase}
+  .nav a{display:flex;align-items:center;gap:12px;padding:10px 12px;margin:2px 0;border-radius:10px;color:var(--ink-2);text-decoration:none;font-size:14px;font-weight:600}
   .nav a:hover{background:#f8dce7}
-  .nav a.active{background:var(--rose);color:#fff;font-weight:600}
+  .nav a.active{background:var(--rose);color:#fff}
   .user{margin-top:auto;background:#fff;border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow)}
-  .avatar{width:34px;height:34px;border-radius:50%;background:var(--green-soft);color:var(--green-text);display:grid;place-items:center;font-weight:700;font-size:12px;flex:none}
-  .user b{display:block;font-size:12.5px}
-  .user small{color:var(--muted);font-size:11px}
-  .user button{margin-left:auto;background:none;border:0;color:var(--ink-2);padding:6px;border-radius:8px}
-  .user button:hover{background:var(--rose-softer)}
+  .avatar{width:34px;height:34px;border-radius:50%;background:var(--green-soft);color:var(--green-text);display:grid;place-items:center;font-weight:800;font-size:12px;flex:none}
+  .user b{display:block;font-size:13px}
+  .user small{color:var(--muted);font-size:12px}
+  .logout{margin-left:auto;background:none;border:1px solid transparent;color:var(--ink-2);padding:6px 8px;border-radius:8px;display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700}
+  .logout:hover{background:var(--rose-softer);border-color:var(--line)}
+  .mobilebar{display:none}
+  .scrim{display:none}
 
   main{flex:1;min-width:0;display:flex;flex-direction:column}
   .page{display:none;flex:1;flex-direction:column}
   .page.on{display:flex}
-  .ph{background:#fff;padding:26px 32px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:20px}
+  .ph{background:#fff;padding:26px 32px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
   .ph h1{font-family:'Lora',serif;font-weight:600;font-size:28px;margin:0;line-height:1.2}
-  .ph p{margin:4px 0 0;color:var(--muted);font-size:13px}
+  .ph p{margin:4px 0 0;color:var(--muted);font-size:14px}
   .content{padding:28px 32px 36px}
   .narrow{max-width:850px}
 
   /* ---------- COMPONENTS ---------- */
-  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid #f6e8ee}
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:10px;padding:11px 20px;font-weight:700;font-size:13px;transition:.15s}
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid #f3e3ea}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:10px;padding:11px 20px;font-weight:700;font-size:14px;transition:.15s}
+  .btn:disabled{opacity:.55;cursor:not-allowed}
   .btn-rose{background:var(--rose);color:#fff}
-  .btn-rose:hover{background:var(--rose-dark)}
+  .btn-rose:hover:not(:disabled){background:var(--rose-dark)}
   .btn-green{background:var(--green);color:#fff}
-  .btn-green:hover{background:var(--green-dark)}
+  .btn-green:hover:not(:disabled){background:var(--green-dark)}
   .btn-ghost{background:#fff;color:var(--ink);border:1px solid var(--field)}
-  .btn-ghost:hover{background:var(--rose-softer)}
-  .btn-sm{padding:9px 16px;font-size:12.5px}
-  .chip{border:1px solid var(--field);background:#fff;border-radius:999px;padding:7px 16px;font-size:12.5px;font-weight:600;color:var(--ink-2)}
+  .btn-ghost:hover:not(:disabled){background:var(--rose-softer)}
+  .btn-danger{background:var(--err);color:#fff}
+  .btn-sm{padding:9px 16px;font-size:13px}
+  .chip{border:1px solid var(--field);background:#fff;border-radius:999px;padding:7px 16px;font-size:13px;font-weight:700;color:var(--ink-2)}
   .chip:hover{background:var(--rose-softer)}
   .chip.on{background:var(--rose);border-color:var(--rose);color:#fff}
-  .badge{display:inline-block;border-radius:999px;padding:3px 10px;font-size:11px;font-weight:700}
+  .badge{display:inline-block;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:800}
   .b-green{background:var(--green-soft);color:var(--green-text)}
-  .b-rose{background:var(--rose-soft);color:var(--rose)}
+  .b-rose{background:var(--rose-soft);color:var(--rose-text)}
   .b-amber{background:var(--amber-soft);color:var(--amber-text)}
-  .b-grey{background:#efe9ec;color:var(--ink-2)}
-  .tag{display:inline-block;border-radius:999px;padding:4px 10px;font-size:11px;font-weight:600;background:var(--rose-softer);color:var(--ink-2)}
+  .b-grey{background:#ece5e8;color:var(--ink-2)}
+  .tag{display:inline-block;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:700;background:var(--rose-softer);color:var(--ink-2)}
   .tag.need{background:var(--green-soft);color:var(--green-text)}
 
-  label.f{display:block;font-size:12px;font-weight:600;color:var(--ink-2);margin-bottom:7px}
-  .inp{width:100%;height:42px;border:1px solid var(--field);border-radius:10px;padding:0 14px;background:#fff;outline:none;transition:.15s}
-  .inp:focus{border-color:var(--rose);box-shadow:0 0 0 3px rgba(181,87,127,.12)}
-  .inp::placeholder{color:#b9aab1}
-  textarea.inp{height:80px;padding:12px 14px;resize:vertical}
-  select.inp{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238c7c84' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+  label.f{display:block;font-size:13px;font-weight:700;color:var(--ink-2);margin-bottom:7px}
+  .req{color:var(--err);font-weight:800}
+  .inp{width:100%;height:44px;border:1px solid var(--field);border-radius:10px;padding:0 14px;background:#fff;outline:none;transition:.15s}
+  .inp:focus{border-color:var(--rose);box-shadow:0 0 0 3px rgba(168,76,116,.18)}
+  .inp:disabled{background:#f5eff2;color:var(--muted)}
+  .inp::placeholder{color:var(--ph)}
+  .inp.invalid{border-color:var(--err);box-shadow:0 0 0 3px rgba(180,55,47,.12)}
+  .ferr{color:var(--err);font-size:13px;font-weight:700;margin-top:6px;display:flex;gap:6px;align-items:flex-start}
+  .ferr:empty{display:none}
+  .hint{color:var(--muted);font-size:12.5px;margin-top:6px}
+  textarea.inp{height:84px;padding:12px 14px;resize:vertical}
+  select.inp{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b5c63' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
   .fg{margin-bottom:16px}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}
   .sec{padding:22px 24px 8px}
   .sec-h{display:flex;align-items:center;gap:10px;margin-bottom:18px}
-  .num{width:22px;height:22px;border-radius:50%;background:var(--rose-soft);color:var(--rose);font-size:11px;font-weight:800;display:grid;place-items:center}
-  .sec-h h3{font-family:'Lora',serif;font-weight:600;font-size:17px;margin:0}
-  .actions{display:flex;justify-content:flex-end;gap:12px;margin-top:22px}
-  .banner{display:flex;align-items:center;gap:10px;background:var(--green-soft);color:var(--green-text);border-radius:12px;padding:14px 18px;font-weight:700;font-size:13px;margin-bottom:20px}
-  .banner.err{background:#fde3e3;color:#b4372f}
-  .toggle{display:flex;align-items:center;height:44px;border:1px solid var(--field);border-radius:10px;padding:0 18px 0 40px;margin-top:12px;font-size:13px;font-weight:600;color:var(--ink-2);cursor:pointer;background:#fff;user-select:none}
-  .toggle.on{background:var(--rose-soft);border-color:#eab2c7}
-  .need-chip{border:1px solid var(--field);background:#fff;border-radius:999px;padding:9px 20px 9px 38px;font-size:12.5px;font-weight:600;color:var(--ink-2);margin:0 8px 10px 0}
-  .need-chip.on{background:var(--green-soft);border-color:#a8d7b5;color:var(--green-text)}
+  .num{width:24px;height:24px;border-radius:50%;background:var(--rose-soft);color:var(--rose-text);font-size:12px;font-weight:800;display:grid;place-items:center}
+  .sec-h h2{font-family:'Lora',serif;font-weight:600;font-size:17px;margin:0}
+  .actions{display:flex;justify-content:flex-end;gap:12px;margin-top:22px;flex-wrap:wrap}
+  .summary{display:flex;align-items:flex-start;gap:10px;background:var(--err-soft);color:var(--err);border-radius:12px;padding:14px 18px;font-weight:700;font-size:14px;margin-bottom:20px}
+  .check-line{display:flex;align-items:center;gap:10px;font-size:13.5px;font-weight:600;color:var(--ink-2);margin:-4px 0 16px;cursor:pointer}
+  .check-line input{width:18px;height:18px;accent-color:var(--rose)}
 
-  table.t{width:100%;border-collapse:collapse;font-size:13px}
-  table.t th{text-align:left;font-weight:700;font-size:12px;color:var(--ink-2);padding:13px 20px;background:var(--rose-softer)}
-  table.t td{padding:14px 20px;border-top:1px solid var(--line)}
+  /* seleção com ✓ visível (toggles e chips) */
+  .toggle,.need-chip{position:relative;cursor:pointer;user-select:none;font-weight:700;color:var(--ink-2);background:#fff;border:1px solid var(--field)}
+  .toggle{display:flex;align-items:center;width:100%;height:46px;border-radius:10px;padding:0 18px 0 46px;margin-top:12px;font-size:14px;text-align:left}
+  .need-chip{border-radius:999px;padding:9px 18px 9px 40px;font-size:13px;margin:0 8px 10px 0}
+  .toggle:before,.need-chip:before{content:"";position:absolute;left:14px;top:50%;width:18px;height:18px;margin-top:-9px;border-radius:5px;border:2px solid var(--field);background:#fff}
+  .need-chip:before{left:13px;border-radius:50%}
+  .toggle[aria-pressed="true"]{background:var(--rose-soft);border-color:var(--rose)}
+  .toggle[aria-pressed="true"]:before{background:var(--rose) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/12px no-repeat;border-color:var(--rose)}
+  .need-chip[aria-pressed="true"]{background:var(--green-soft);border-color:var(--green);color:var(--green-text)}
+  .need-chip[aria-pressed="true"]:before{background:var(--green) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/11px no-repeat;border-color:var(--green)}
+
+  .tscroll{overflow-x:auto}
+  table.t{width:100%;border-collapse:collapse;font-size:14px}
+  table.t th{text-align:left;font-weight:800;font-size:13px;color:var(--ink-2);padding:13px 18px;background:var(--rose-softer);white-space:nowrap}
+  table.t td{padding:13px 18px;border-top:1px solid var(--line)}
   table.t tr:first-child td{border-top:0}
   table.t td.b{font-weight:700}
   table.t td.m{color:var(--muted)}
-  .qty{font-family:'Lora',serif;font-weight:600;font-size:18px}
+  table.t td.n,table.t th.n{text-align:right}
+  table.t tr.voided td{color:var(--muted);text-decoration:line-through}
+  table.t tr.voided td:last-child{text-decoration:none}
+  .qty{font-weight:800;font-size:15px}
   .tbl-wrap{padding:16px 20px 20px}
   .tbl-wrap table.t th:first-child{border-radius:8px 0 0 8px}
   .tbl-wrap table.t th:last-child{border-radius:0 8px 8px 0}
 
   .search{position:relative}
   .search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted)}
-  .search input{padding-left:36px;width:270px}
-  .toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:22px}
+  .search input{padding-left:36px;width:280px}
+  .toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:22px;flex-wrap:wrap}
   .chips{display:flex;gap:8px;flex-wrap:wrap}
 
   /* INÍCIO */
   .quick{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px}
-  .quick button{height:64px;border-radius:14px;font-size:14.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;border:0}
+  .quick button{height:64px;border-radius:14px;font-size:15px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:10px;border:0}
   .quick .q1{background:var(--rose);color:#fff}
   .quick .q2{background:var(--green);color:#fff}
   .quick .q3{background:#fff;color:var(--ink);border:1px solid var(--field)}
-  .quick button:hover{filter:brightness(.96)}
+  .quick button:hover{filter:brightness(.95)}
+  .quick svg.i{width:18px;height:18px}
   .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px}
   .stat{padding:18px 20px}
-  .stat small{font-size:12px;color:var(--ink-2);font-weight:600}
-  .stat b{display:block;font-family:'Lora',serif;font-weight:600;font-size:30px;margin-top:4px}
-  .stat.rose b{color:var(--rose)} .stat.green b{color:var(--green-text)}
+  .stat small{font-size:13px;color:var(--ink-2);font-weight:700}
+  .stat b{display:block;font-family:'Lora',serif;font-weight:600;font-size:30px;margin-top:4px;color:var(--ink)}
   .home-grid{display:grid;grid-template-columns:1fr 330px;gap:16px}
-  .card-h{font-family:'Lora',serif;font-weight:600;font-size:17px;padding:20px 22px 12px;display:flex;align-items:center;gap:8px}
+  .card-h{font-family:'Lora',serif;font-weight:600;font-size:17px;padding:20px 22px 12px;display:flex;align-items:center;gap:8px;margin:0}
   .mov td{padding:12px 22px}
-  .low{background:var(--amber-soft);border:1px solid var(--amber-border);border-radius:10px;padding:12px 14px;margin:0 18px 12px;cursor:pointer}
-  .low b{display:block;font-size:13px}
-  .low small{color:var(--amber-text);font-size:12px}
+  .low{display:flex;align-items:center;gap:10px;width:calc(100% - 36px);text-align:left;background:var(--amber-soft);border:1px solid var(--amber-border);border-radius:10px;padding:12px 14px;margin:0 18px 12px;cursor:pointer}
+  .low:hover{filter:brightness(.97)}
+  .low b{display:block;font-size:14px}
+  .low small{color:var(--amber-text);font-size:13px;font-weight:600}
+  .low .go{margin-left:auto;color:var(--amber-text)}
 
   /* PACIENTES */
   .pgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-  .pcard{padding:20px 22px;cursor:pointer;transition:.15s}
-  .pcard:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(181,87,127,.14)}
+  .pcard{padding:20px 22px;cursor:pointer;transition:.15s;position:relative}
+  .pcard:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(168,76,116,.16)}
   .pc-top{display:flex;gap:14px;align-items:flex-start}
-  .pav{width:44px;height:44px;border-radius:50%;background:var(--rose-soft);color:var(--rose);display:grid;place-items:center;font-family:'Lora',serif;font-size:18px;font-weight:600;flex:none}
+  .pav{width:44px;height:44px;border-radius:50%;background:var(--rose-soft);color:var(--rose-text);display:grid;place-items:center;font-family:'Lora',serif;font-size:18px;font-weight:600;flex:none}
   .pc-top b{font-size:15px;display:block}
-  .pc-top small{color:var(--muted);font-size:12.5px}
+  .pc-top small{color:var(--muted);font-size:13px}
   .pc-top .badge{margin-left:auto}
   .pc-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+  .pc-foot{display:flex;justify-content:flex-end;align-items:center;gap:6px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line);color:var(--rose-text);font-weight:800;font-size:13px}
   .empty{padding:40px;text-align:center;color:var(--muted)}
 
   /* DETALHES */
   .det{display:grid;grid-template-columns:260px 1fr;gap:20px;align-items:start}
   .side-card{padding:20px 20px 18px;margin-bottom:16px}
-  .side-card .row{display:flex;align-items:center;gap:10px;font-size:13px;margin-top:10px;color:var(--ink-2)}
-  .side-card h4{font-family:'Lora',serif;font-weight:600;font-size:16px;margin:0 0 12px}
+  .side-card .row{display:flex;align-items:center;gap:10px;font-size:14px;margin-top:10px;color:var(--ink-2)}
+  .side-card h2{font-family:'Lora',serif;font-weight:600;font-size:16px;margin:0 0 12px}
   .big{font-family:'Lora',serif;font-weight:600;font-size:28px;margin-right:6px}
-  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:16px}
-  .tabs button{background:none;border:0;padding:12px 16px;font-size:13px;font-weight:700;color:var(--ink-2);border-bottom:2px solid transparent;margin-bottom:-1px}
-  .tabs button.on{color:var(--rose);border-color:var(--rose)}
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:16px;overflow-x:auto}
+  .tabs button{background:none;border:0;padding:12px 16px;font-size:14px;font-weight:800;color:var(--ink-2);border-bottom:3px solid transparent;margin-bottom:-1px;white-space:nowrap}
+  .tabs button[aria-selected="true"]{color:var(--rose-text);border-color:var(--rose)}
   .note-box{padding:18px 20px}
   .timeline{position:relative;padding-left:40px;margin-top:22px}
-  .timeline:before{content:"";position:absolute;left:12px;top:6px;bottom:0;width:2px;background:#f3d3df}
+  .timeline:before{content:"";position:absolute;left:12px;top:6px;bottom:0;width:2px;background:#f0cbd9}
   .tl{position:relative;padding:16px 20px;margin-bottom:16px}
   .tl:before{content:"";position:absolute;left:-33px;top:22px;width:12px;height:12px;border-radius:50%;background:var(--rose)}
-  .tl .meta{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:10px;margin-bottom:8px}
-  .status-wrap{display:flex;align-items:center;gap:12px;font-size:13px;font-weight:600}
-  .status-wrap select{width:180px}
+  .tl .meta{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .status-wrap{display:flex;align-items:center;gap:12px;font-size:14px;font-weight:700}
+  .status-wrap select{width:190px}
 
-  /* SAÍDA */
-  .avail{background:var(--green-soft);border-radius:10px;padding:8px 14px;height:62px}
-  .avail small{color:var(--green-text);font-size:11.5px;font-weight:600}
+  /* ENTREGA */
+  .avail{background:var(--green-soft);border-radius:10px;padding:8px 14px;height:66px}
+  .avail small{color:var(--green-text);font-size:12.5px;font-weight:700}
   .avail b{display:block;font-family:'Lora',serif;font-size:22px;font-weight:600;color:var(--green-text)}
-  .err-txt{color:#b4372f;font-size:12px;margin-top:6px;font-weight:600}
 
   /* DOAÇÃO itens */
-  .item-row{display:grid;grid-template-columns:1.1fr 1.4fr .55fr 1.2fr 40px;gap:10px;align-items:end;background:var(--rose-softer);border-radius:12px;padding:14px;margin-bottom:12px}
-  .icon-btn{width:40px;height:40px;border-radius:10px;border:1px solid var(--field);background:#fff;display:grid;place-items:center;color:var(--ink-2)}
-  .icon-btn:hover{background:#fde3e3;color:#b4372f}
+  .item-row{background:var(--rose-softer);border-radius:12px;padding:14px;margin-bottom:12px}
+  .item-grid{display:grid;grid-template-columns:1.6fr .7fr 1.3fr 1.3fr 44px;gap:10px;align-items:start}
+  .item-new{display:grid;grid-template-columns:1.6fr 1.2fr;gap:10px;margin-top:10px}
+  .icon-btn{width:44px;height:44px;border-radius:10px;border:1px solid var(--field);background:#fff;display:grid;place-items:center;color:var(--ink-2);margin-top:27px}
+  .icon-btn:hover:not(:disabled){background:var(--err-soft);color:var(--err)}
+  .icon-btn:disabled{opacity:.45;cursor:not-allowed}
 
   /* HISTÓRICO */
-  .filters{display:flex;gap:12px;margin-bottom:22px}
-  .filters .inp{width:auto;min-width:160px}
+  .filters{display:flex;gap:14px;margin-bottom:22px;flex-wrap:wrap;align-items:flex-start}
+  .filters .fg{margin:0}
+  .filters .inp{width:auto;min-width:180px}
+  .act{background:none;border:1px solid var(--field);border-radius:8px;padding:5px 10px;font-size:12.5px;font-weight:700;color:var(--ink-2)}
+  .act:hover{background:var(--err-soft);color:var(--err);border-color:var(--err)}
 
   /* RELATÓRIOS */
   .rep{display:grid;grid-template-columns:300px 1fr;gap:20px;align-items:start}
   .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:6px 0 22px}
   .kpi{border-radius:12px;padding:14px 16px}
-  .kpi small{font-size:12px;font-weight:600}
+  .kpi small{font-size:13px;font-weight:700}
   .kpi b{display:block;font-family:'Lora',serif;font-weight:600;font-size:28px}
   .bar-row{margin-bottom:18px}
-  .bar-row .lbl{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:7px}
+  .bar-row .lbl{display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:7px;gap:10px}
   .bar-row .lbl span{color:var(--ink-2)}
   .bar{height:8px;border-radius:99px;background:var(--rose-soft);overflow:hidden}
   .bar i{display:block;height:100%;background:var(--green);border-radius:99px}
 
-  /* TOAST / MODAL */
-  .toast{position:fixed;right:28px;bottom:28px;background:var(--ink);color:#fff;padding:14px 20px;border-radius:12px;font-weight:600;font-size:13px;box-shadow:0 10px 30px rgba(0,0,0,.2);transform:translateY(20px);opacity:0;transition:.25s;pointer-events:none;z-index:50;display:flex;gap:10px;align-items:center}
-  .toast.on{transform:none;opacity:1}
+  /* TOAST (só para sucesso, com Desfazer) */
+  .toast{position:fixed;right:28px;bottom:28px;max-width:440px;background:var(--ink);color:#fff;padding:14px 16px 14px 18px;border-radius:12px;font-weight:600;font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.2);transform:translateY(20px);opacity:0;transition:.25s;pointer-events:none;z-index:60;display:flex;gap:12px;align-items:center}
+  .toast.on{transform:none;opacity:1;pointer-events:auto}
+  .toast .undo{margin-left:6px;background:#fff;color:var(--ink);border:0;border-radius:8px;padding:7px 12px;font-weight:800;font-size:13px;white-space:nowrap}
+  .toast .x{background:none;border:0;color:#d8c8cf;font-size:18px;line-height:1;padding:2px 4px}
+
+  /* MODAL */
+  .modal-bg{position:fixed;inset:0;background:rgba(47,35,40,.45);display:none;align-items:center;justify-content:center;z-index:70;padding:20px}
+  .modal-bg.on{display:flex}
+  .modal{background:#fff;border-radius:16px;max-width:460px;width:100%;padding:26px 26px 22px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+  .modal h2{font-family:'Lora',serif;font-weight:600;font-size:21px;margin:0 0 10px}
+  .modal p{margin:0 0 10px;color:var(--ink-2);line-height:1.5}
+  .modal .actions{margin-top:18px}
+
+  /* ---------- RESPONSIVO ---------- */
+  @media (max-width: 900px){
+    #app{background:var(--bg)}
+    aside{position:fixed;left:0;top:0;bottom:0;z-index:50;transform:translateX(-105%);transition:transform .2s;box-shadow:4px 0 20px rgba(0,0,0,.15)}
+    aside.open{transform:none}
+    .scrim.on{display:block;position:fixed;inset:0;background:rgba(47,35,40,.35);z-index:45}
+    .mobilebar{display:flex;align-items:center;gap:12px;background:#fff;border-bottom:1px solid var(--line);padding:10px 16px;position:sticky;top:0;z-index:30}
+    .mobilebar b{font-family:'Lora',serif;font-size:17px}
+    .menu-btn{display:flex;align-items:center;gap:8px;border:1px solid var(--field);background:#fff;border-radius:10px;padding:8px 12px;font-weight:800}
+    .ph{padding:18px 16px}
+    .ph h1{font-size:24px}
+    .content{padding:18px 16px 28px}
+    .grid2,.grid3,.home-grid,.det,.rep,.pgrid,.quick,.item-new{grid-template-columns:1fr}
+    .g-a{grid-template-columns:1fr !important}
+    .stats{grid-template-columns:1fr 1fr}
+    .item-grid{grid-template-columns:1fr 1fr}
+    .item-grid .icon-btn{margin-top:0}
+    .search input{width:100%}
+    .search{width:100%}
+    .filters .fg,.filters .inp{width:100%}
+    #login{flex-direction:column;justify-content:flex-start;padding:28px 18px;gap:24px}
+    #login h1{font-size:30px}
+    #login .hero{max-width:none}
+    .login-card{width:100%;max-width:420px}
+    .toast{left:16px;right:16px;bottom:16px;max-width:none}
+  }
 </style>
 </head>
 <body>
 
 <!-- ===================== LOGIN ===================== -->
-<section id="login">
+<main id="login">
   <div class="hero">
-    <div class="logo"><svg viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></div>
+    <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></div>
     <h1>Cuidar de quem<br>cuida da vida.</h1>
-    <p>Sistema do Ampara para registrar doações, controlar<br>o estoque e acompanhar pacientes e suas famílias.</p>
+    <p>Sistema do Ampara para registrar doações, controlar o estoque e acompanhar pacientes e suas famílias.</p>
   </div>
-  <form class="login-card" id="loginForm" autocomplete="off">
-    <h2>Bem-vinda!</h2>
+  <form class="login-card" id="loginForm" autocomplete="off" novalidate>
+    <h2>Boas-vindas!</h2>
     <div class="sub">Entre com seu usuário e senha.</div>
-    <div class="fg"><label class="f">E-mail ou usuário</label><input class="inp" id="lgUser" value="ana.lucia@ampara.org"></div>
-    <div class="fg"><label class="f">Senha</label><input class="inp" id="lgPass" type="password" value="12345678"></div>
-    <div class="login-error" id="lgErr">Preencha usuário e senha para entrar.</div>
+    <div class="fg"><label class="f" for="lgUser">E-mail ou usuário</label><input class="inp" id="lgUser" value="ana.lucia@ampara.org"><div class="ferr" id="lgUser-err"></div></div>
+    <div class="fg"><label class="f" for="lgPass">Senha</label><input class="inp" id="lgPass" type="password" value="12345678"><div class="ferr" id="lgPass-err"></div></div>
     <div class="login-row">
-      <label><input type="checkbox" checked style="accent-color:var(--rose)"> Lembrar de mim</label>
-      <a href="#" onclick="toast('Simulação: um link de recuperação seria enviado por e-mail.');return false;">Esqueci minha senha</a>
+      <label><input type="checkbox" checked style="accent-color:var(--rose);width:16px;height:16px"> Lembrar de mim</label>
+      <button type="button" class="linkbtn" onclick="openForgot()">Esqueci minha senha</button>
     </div>
-    <button class="btn btn-rose" style="width:100%;height:44px" type="submit">Entrar</button>
+    <button class="btn btn-rose" style="width:100%;height:46px" type="submit">Entrar</button>
   </form>
-</section>
+</main>
 
 <!-- ===================== APP ===================== -->
 <div id="app">
-  <aside>
+  <div class="scrim" id="scrim" onclick="toggleMenu(false)"></div>
+  <aside id="sidebar" aria-label="Menu principal">
     <div class="brand">
-      <div class="logo"><svg viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></div>
+      <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></div>
       <div><b>Ampara</b><small>Apoio a pacientes</small></div>
     </div>
     <nav class="nav">
-      <a data-go="inicio"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Início</a>
-      <div class="nav-sec">Doações e estoque</div>
-      <a data-go="doacao"><svg class="i" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.3 7 12 12l8.7-5"/><path d="M12 22V12"/><path d="m7.5 4.3 9 5.1"/></svg>Registrar doação</a>
-      <a data-go="estoque"><svg class="i" viewBox="0 0 24 24"><path d="M2.97 12.92A2 2 0 0 0 2 14.63v3.24a2 2 0 0 0 .97 1.71l3 1.8a2 2 0 0 0 2.06 0L12 19v-5.5l-5-3-4.03 2.42Z"/><path d="m7 16.5-4.74-2.85M7 16.5l5-3M7 16.5v5.17"/><path d="M12 13.5V19l3.97 2.38a2 2 0 0 0 2.06 0l3-1.8a2 2 0 0 0 .97-1.71v-3.24a2 2 0 0 0-.97-1.71L17 10.5l-5 3Z"/><path d="m17 16.5-5-3M17 16.5l4.74-2.85M17 16.5v5.17"/><path d="M7.97 4.42A2 2 0 0 0 7 6.13v4.37l5 3 5-3V6.13a2 2 0 0 0-.97-1.71l-3-1.8a2 2 0 0 0-2.06 0l-3 1.8Z"/><path d="M12 8 7.26 5.15M12 8l4.74-2.85M12 13.5V8"/></svg>Estoque</a>
-      <a data-go="saida"><svg class="i" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.3 7 12 12l8.7-5"/><path d="M12 22V12"/></svg>Registrar saída</a>
-      <a data-go="historico"><svg class="i" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>Histórico</a>
-      <a data-go="relatorios"><svg class="i" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8M16 17H8M10 9H8"/></svg>Relatórios</a>
-      <div class="nav-sec">Pacientes e famílias</div>
-      <a data-go="pacientes"><svg class="i" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Pacientes</a>
-      <a data-go="novo"><svg class="i" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>Novo cadastro</a>
+      <a href="#inicio" data-go="inicio"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Início</a>
+      <div class="nav-sec" aria-hidden="true">Doações e estoque</div>
+      <a href="#doacao" data-go="doacao"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l2-1.14"/><path d="m7.5 4.27 9 5.15"/><path d="M3.29 7 12 12l8.71-5"/><path d="M12 22V12"/><path d="M16 16h6M19 13v6"/></svg>Registrar doação</a>
+      <a href="#estoque" data-go="estoque"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.97 12.92A2 2 0 0 0 2 14.63v3.24a2 2 0 0 0 .97 1.71l3 1.8a2 2 0 0 0 2.06 0L12 19v-5.5l-5-3-4.03 2.42Z"/><path d="m7 16.5-4.74-2.85M7 16.5l5-3M7 16.5v5.17"/><path d="M12 13.5V19l3.97 2.38a2 2 0 0 0 2.06 0l3-1.8a2 2 0 0 0 .97-1.71v-3.24a2 2 0 0 0-.97-1.71L17 10.5l-5 3Z"/><path d="m17 16.5-5-3M17 16.5l4.74-2.85M17 16.5v5.17"/><path d="M7.97 4.42A2 2 0 0 0 7 6.13v4.37l5 3 5-3V6.13a2 2 0 0 0-.97-1.71l-3-1.8a2 2 0 0 0-2.06 0l-3 1.8Z"/><path d="M12 8 7.26 5.15M12 8l4.74-2.85M12 13.5V8"/></svg>Estoque</a>
+      <a href="#entrega" data-go="entrega"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>Registrar entrega</a>
+      <a href="#historico" data-go="historico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>Histórico</a>
+      <a href="#relatorios" data-go="relatorios"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8M16 17H8M10 9H8"/></svg>Relatórios</a>
+      <div class="nav-sec" aria-hidden="true">Pacientes e famílias</div>
+      <a href="#pacientes" data-go="pacientes"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Pacientes</a>
+      <a href="#cadastro" data-go="cadastro"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>Cadastrar paciente</a>
     </nav>
     <div class="user">
-      <div class="avatar">AL</div>
+      <div class="avatar" aria-hidden="true">AL</div>
       <div><b>Ana Lúcia</b><small>Voluntária</small></div>
-      <button title="Sair" onclick="logout()"><svg class="i" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></svg></button>
+      <button class="logout" onclick="logout()" aria-label="Sair do sistema"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></svg>Sair</button>
     </div>
   </aside>
 
   <main>
+    <div class="mobilebar"><button class="menu-btn" onclick="toggleMenu(true)" aria-label="Abrir menu"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>Menu</button><b>Ampara</b></div>
+
     <!-- INÍCIO -->
     <section class="page" id="p-inicio">
-      <div class="ph"><div><h1>Bom dia, Ana Lúcia</h1><p>Sábado, 3 de outubro de 2026</p></div></div>
+      <div class="ph"><div><h1 id="greet">Olá, Ana Lúcia</h1><p>Sábado, 3 de outubro de 2026</p></div></div>
       <div class="content">
         <div class="quick">
-          <button class="q1" data-go="doacao"><svg class="i" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.3 7 12 12l8.7-5M12 22V12"/></svg>Registrar doação</button>
-          <button class="q2" data-go="saida"><svg class="i" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.3 7 12 12l8.7-5M12 22V12"/></svg>Entregar doação</button>
-          <button class="q3" data-go="novo"><svg class="i" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>Cadastrar paciente</button>
+          <button class="q1" data-go="doacao"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l2-1.14"/><path d="M3.29 7 12 12l8.71-5M12 22V12"/><path d="M16 16h6M19 13v6"/></svg>Registrar doação</button>
+          <button class="q2" data-go="entrega"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>Registrar entrega</button>
+          <button class="q3" data-go="cadastro"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>Cadastrar paciente</button>
         </div>
         <div class="stats">
-          <div class="card stat rose"><small>Pacientes ativos</small><b id="stPac">3</b></div>
-          <div class="card stat green"><small>Itens em estoque</small><b id="stEst">135</b></div>
-          <div class="card stat rose"><small>Doações este mês</small><b id="stDoa">28</b></div>
-          <div class="card stat green"><small>Entregas este mês</small><b id="stEnt">19</b></div>
+          <div class="card stat"><small>Pacientes ativos</small><b id="stPac">3</b></div>
+          <div class="card stat"><small>Itens em estoque</small><b id="stEst">135</b></div>
+          <div class="card stat"><small>Doações este mês</small><b id="stDoa">28</b></div>
+          <div class="card stat"><small>Entregas este mês</small><b id="stEnt">19</b></div>
         </div>
         <div class="home-grid">
-          <div class="card"><div class="card-h">Últimas movimentações</div>
-            <table class="t mov" style="margin-bottom:10px"><tbody id="homeMov"></tbody></table>
+          <div class="card"><h2 class="card-h">Últimas movimentações</h2>
+            <div class="tscroll"><table class="t mov" style="margin-bottom:10px"><caption class="sr">Últimas movimentações</caption><tbody id="homeMov"></tbody></table></div>
           </div>
-          <div class="card" style="padding-bottom:8px"><div class="card-h"><svg class="i" viewBox="0 0 24 24" style="color:var(--amber-text)"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4M12 17h.01"/></svg>Estoque baixo</div>
+          <div class="card" style="padding-bottom:8px"><h2 class="card-h"><svg class="i" viewBox="0 0 24 24" style="color:var(--amber-text)" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4M12 17h.01"/></svg>Estoque baixo</h2>
             <div id="homeLow"></div>
           </div>
         </div>
@@ -290,36 +362,36 @@
     <!-- PACIENTES -->
     <section class="page" id="p-pacientes">
       <div class="ph"><div><h1>Pacientes e famílias</h1></div>
-        <button class="btn btn-rose btn-sm" data-go="novo"><svg class="i" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>Novo cadastro</button></div>
+        <button class="btn btn-rose btn-sm" data-go="cadastro"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>Cadastrar paciente</button></div>
       <div class="content">
         <div class="toolbar">
-          <div class="chips" id="pacChips"></div>
-          <div class="search"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input class="inp" id="pacSearch" placeholder="Buscar por nome ou documento"></div>
+          <div class="chips" id="pacChips" role="group" aria-label="Filtrar por status"></div>
+          <div class="search"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input class="inp" id="pacSearch" placeholder="Buscar por nome ou documento" aria-label="Buscar paciente por nome ou documento"></div>
         </div>
         <div class="pgrid" id="pacGrid"></div>
       </div>
     </section>
 
-    <!-- NOVO PACIENTE -->
-    <section class="page" id="p-novo">
-      <div class="ph"><div><h1>Novo cadastro de paciente</h1><p>Dados pessoais, clínicos, família e necessidades em uma única tela.</p></div></div>
+    <!-- CADASTRAR PACIENTE -->
+    <section class="page" id="p-cadastro">
+      <div class="ph"><div><h1>Cadastrar paciente</h1><p>Dados pessoais, clínicos, família e necessidades em uma única tela. Campos com <span class="req">*</span> são obrigatórios.</p></div></div>
       <div class="content" style="max-width:1000px" id="novoWrap"></div>
     </section>
 
     <!-- DETALHES -->
     <section class="page" id="p-detalhes">
       <div class="ph"><div><h1 id="dtName"></h1><p id="dtSub"></p></div>
-        <div class="status-wrap">Status: <select class="inp" id="dtStatus"></select></div></div>
+        <div class="status-wrap"><label for="dtStatus">Status:</label> <select class="inp" id="dtStatus"></select></div></div>
       <div class="content">
         <div class="det">
           <div id="dtSide"></div>
           <div>
-            <div class="tabs" id="dtTabs">
-              <button data-tab="pront">Prontuário social</button>
-              <button data-tab="doa">Doações recebidas</button>
-              <button data-tab="dados">Dados do cadastro</button>
+            <div class="tabs" id="dtTabs" role="tablist">
+              <button role="tab" data-tab="pront">Acompanhamento</button>
+              <button role="tab" data-tab="doa">Entregas recebidas</button>
+              <button role="tab" data-tab="dados">Dados do cadastro</button>
             </div>
-            <div id="dtBody"></div>
+            <div id="dtBody" role="tabpanel"></div>
           </div>
         </div>
       </div>
@@ -327,74 +399,74 @@
 
     <!-- REGISTRAR DOAÇÃO -->
     <section class="page" id="p-doacao">
-      <div class="ph"><div><h1>Registrar doação recebida</h1><p>Preencha tudo em uma única tela e clique em salvar.</p></div></div>
+      <div class="ph"><div><h1>Registrar doação</h1><p>Itens recebidos entram no estoque. Campos com <span class="req">*</span> são obrigatórios.</p></div></div>
       <div class="content" style="max-width:1000px">
-        <div id="doaBanner"></div>
+        <div id="doaSummary"></div>
         <div class="grid2" style="margin-bottom:20px">
-          <div class="card sec"><div class="sec-h"><span class="num">1</span><h3>Quem doou</h3></div>
-            <div class="fg"><label class="f">Nome do doador</label><input class="inp" id="doaNome" placeholder="Pessoa ou empresa"></div>
-            <div class="fg"><label class="f">Telefone ou e-mail</label><input class="inp" id="doaTel" placeholder="(81) 99999-9999"></div>
+          <div class="card sec"><div class="sec-h"><span class="num">1</span><h2>Quem doou</h2></div>
+            <div class="fg"><label class="f" for="doaNome">Nome do doador <span class="req">*</span></label><input class="inp" id="doaNome" placeholder="Pessoa ou empresa"><div class="ferr" id="doaNome-err"></div></div>
+            <label class="check-line"><input type="checkbox" id="doaAnon" onchange="toggleAnon()"> Doação anônima (o doador não quis se identificar)</label>
+            <div class="fg"><label class="f" for="doaTel">Telefone ou e-mail</label><input class="inp" id="doaTel" placeholder="(81) 99999-9999"></div>
           </div>
-          <div class="card sec"><div class="sec-h"><span class="num">2</span><h3>Recebimento</h3></div>
-            <div class="fg"><label class="f">Data de entrada</label><input class="inp" type="date" id="doaData"></div>
-            <div class="fg"><label class="f">Voluntária responsável</label><select class="inp" id="doaVol"><option>Ana Lúcia</option><option>Teresa</option><option>Rosângela</option></select></div>
+          <div class="card sec"><div class="sec-h"><span class="num">2</span><h2>Recebimento</h2></div>
+            <div class="fg"><label class="f" for="doaData">Data de entrada <span class="req">*</span></label><input class="inp" type="date" id="doaData"><div class="ferr" id="doaData-err"></div></div>
+            <div class="fg"><label class="f" for="doaVol">Voluntária responsável</label><select class="inp" id="doaVol"><option>Ana Lúcia</option><option>Teresa</option><option>Rosângela</option></select></div>
           </div>
         </div>
-        <div class="card sec" style="padding-bottom:20px"><div class="sec-h"><span class="num">3</span><h3>Itens doados</h3></div>
+        <div class="card sec" style="padding-bottom:20px"><div class="sec-h"><span class="num">3</span><h2>Itens doados</h2></div>
           <div id="doaItems"></div>
-          <button class="btn btn-ghost btn-sm" onclick="addDoaItem()"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></svg>Adicionar outro item</button>
+          <button class="btn btn-ghost btn-sm" onclick="addDoaItem()"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5v14"/></svg>Adicionar outro item</button>
         </div>
-        <div class="actions"><button class="btn btn-ghost" data-go="inicio">Cancelar</button><button class="btn btn-rose" onclick="salvarDoacao()">Salvar doação</button></div>
+        <div class="actions"><button class="btn btn-ghost" data-go="inicio">Cancelar</button><button class="btn btn-rose" id="doaSave" onclick="salvarDoacao()">Salvar doação</button></div>
       </div>
     </section>
 
     <!-- ESTOQUE -->
     <section class="page" id="p-estoque">
-      <div class="ph"><div><h1>Estoque</h1><p>Saldo atualizado automaticamente a cada entrada e saída.</p></div>
-        <div style="display:flex;gap:10px"><button class="btn btn-green btn-sm" data-go="saida">Registrar saída</button><button class="btn btn-rose btn-sm" data-go="doacao">Registrar entrada</button></div></div>
+      <div class="ph"><div><h1>Estoque</h1><p>Saldo atualizado automaticamente a cada doação e entrega.</p></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-rose btn-sm" data-go="doacao">Registrar doação</button><button class="btn btn-green btn-sm" data-go="entrega">Registrar entrega</button></div></div>
       <div class="content">
         <div class="toolbar">
-          <div class="chips" id="estChips"></div>
-          <div class="search"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input class="inp" id="estSearch" placeholder="Buscar item" style="width:240px"></div>
+          <div class="chips" id="estChips" role="group" aria-label="Filtrar por categoria"></div>
+          <div class="search"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input class="inp" id="estSearch" placeholder="Buscar item" aria-label="Buscar item no estoque" style="width:240px"></div>
         </div>
-        <div class="card tbl-wrap"><table class="t"><thead><tr><th>Item</th><th>Tipo</th><th>Local de armazenamento</th><th>Quantidade</th><th>Situação</th></tr></thead><tbody id="estBody"></tbody></table></div>
+        <div class="card tbl-wrap tscroll"><table class="t"><caption class="sr">Itens em estoque</caption><thead><tr><th>Item</th><th>Categoria</th><th>Local de armazenamento</th><th class="n">Quantidade</th><th>Situação</th></tr></thead><tbody id="estBody"></tbody></table></div>
       </div>
     </section>
 
-    <!-- REGISTRAR SAÍDA -->
-    <section class="page" id="p-saida">
-      <div class="ph"><div><h1>Registrar saída (entrega)</h1><p>Vincule o item entregue ao paciente ou família que recebeu.</p></div></div>
+    <!-- REGISTRAR ENTREGA -->
+    <section class="page" id="p-entrega">
+      <div class="ph"><div><h1>Registrar entrega</h1><p>Vincule o item entregue ao paciente ou família. A entrega reduz o saldo do estoque.</p></div></div>
       <div class="content narrow">
-        <div id="saiBanner"></div>
+        <div id="saiSummary"></div>
         <div class="grid2" style="margin-bottom:20px">
-          <div class="card sec"><div class="sec-h"><span class="num">1</span><h3>Quem recebe</h3></div>
-            <div class="fg"><label class="f">Paciente ou família</label><select class="inp" id="saiPac"></select></div>
-            <div class="fg"><label class="f">Data da entrega</label><input class="inp" type="date" id="saiData"></div>
+          <div class="card sec"><div class="sec-h"><span class="num">1</span><h2>Quem recebe</h2></div>
+            <div class="fg"><label class="f" for="saiPac">Paciente ou família <span class="req">*</span></label><select class="inp" id="saiPac"></select><div class="ferr" id="saiPac-err"></div></div>
+            <div class="fg"><label class="f" for="saiData">Data da entrega <span class="req">*</span></label><input class="inp" type="date" id="saiData"><div class="ferr" id="saiData-err"></div></div>
           </div>
-          <div class="card sec"><div class="sec-h"><span class="num">2</span><h3>O que foi entregue</h3></div>
-            <div class="fg"><label class="f">Item do estoque</label><select class="inp" id="saiItem"></select></div>
+          <div class="card sec"><div class="sec-h"><span class="num">2</span><h2>O que foi entregue</h2></div>
+            <div class="fg"><label class="f" for="saiItem">Item do estoque <span class="req">*</span></label><select class="inp" id="saiItem"></select><div class="ferr" id="saiItem-err"></div></div>
             <div class="grid2" style="gap:14px">
-              <div class="fg"><label class="f">Quantidade</label><input class="inp" type="number" min="1" id="saiQtd" value="1"></div>
-              <div class="avail" style="margin-top:0"><small>Disponível</small><b id="saiDisp">42</b></div>
+              <div class="fg"><label class="f" for="saiQtd">Quantidade <span class="req">*</span></label><input class="inp" type="number" min="1" step="1" id="saiQtd" value="1"><div class="ferr" id="saiQtd-err"></div></div>
+              <div class="avail" aria-live="polite"><small>Disponível</small><b id="saiDisp">—</b></div>
             </div>
-            <div class="err-txt" id="saiErr" style="margin:-8px 0 12px;display:none"></div>
           </div>
         </div>
-        <div class="card sec" style="padding-bottom:20px"><label class="f">Observação (opcional)</label><textarea class="inp" id="saiObs"></textarea></div>
-        <div class="actions"><button class="btn btn-green" onclick="confirmarSaida()">Confirmar entrega</button></div>
+        <div class="card sec" style="padding-bottom:20px"><label class="f" for="saiObs">Observação (opcional)</label><textarea class="inp" id="saiObs"></textarea></div>
+        <div class="actions"><button class="btn btn-ghost" data-go="inicio">Cancelar</button><button class="btn btn-green" id="saiSave" onclick="confirmarEntrega()">Confirmar entrega</button></div>
       </div>
     </section>
 
     <!-- HISTÓRICO -->
     <section class="page" id="p-historico">
-      <div class="ph"><div><h1>Histórico de movimentações</h1><p>Acompanhe cada item desde a entrada até a entrega final.</p></div></div>
+      <div class="ph"><div><h1>Histórico de movimentações</h1><p>Acompanhe cada item desde a doação até a entrega. Lançamentos errados podem ser estornados.</p></div></div>
       <div class="content">
         <div class="filters">
-          <select class="inp" id="hiTipo"><option value="">Todas as movimentações</option><option value="Entrada">Entradas</option><option value="Saída">Saídas</option></select>
-          <input class="inp" type="date" id="hiDe" value="2026-09-01">
-          <input class="inp" type="date" id="hiAte" value="2026-10-03">
+          <div class="fg"><label class="f" for="hiTipo">Movimento</label><select class="inp" id="hiTipo"><option value="">Todos</option><option value="Doação">Doações</option><option value="Entrega">Entregas</option><option value="Estorno">Estornos</option></select></div>
+          <div class="fg"><label class="f" for="hiDe">Data inicial</label><input class="inp" type="date" id="hiDe" value="2026-09-01"></div>
+          <div class="fg"><label class="f" for="hiAte">Data final</label><input class="inp" type="date" id="hiAte" value="2026-10-03"><div class="ferr" id="hiAte-err"></div></div>
         </div>
-        <div class="card tbl-wrap"><table class="t"><thead><tr><th>Data</th><th>Movimento</th><th>Item</th><th>Qtd.</th><th>Doador / Beneficiário</th><th>Voluntária</th></tr></thead><tbody id="hiBody"></tbody></table></div>
+        <div class="card tbl-wrap tscroll"><table class="t"><caption class="sr">Movimentações</caption><thead><tr><th>Data</th><th>Movimento</th><th>Item</th><th class="n">Qtd.</th><th>Doador / Beneficiário</th><th>Voluntária</th><th>Ações</th></tr></thead><tbody id="hiBody"></tbody></table></div>
       </div>
     </section>
 
@@ -404,13 +476,13 @@
       <div class="content">
         <div class="rep">
           <div class="card sec" style="padding-bottom:20px">
-            <h3 class="serif" style="font-size:17px;font-weight:600;margin:0 0 18px">Montar relatório</h3>
-            <div class="fg"><label class="f">Tipo de relatório</label><select class="inp" id="reTipo"><option value="c">Completo (entrada, estoque e destino)</option><option value="e">Somente entradas</option><option value="s">Somente saídas</option></select></div>
-            <div class="fg"><label class="f">De</label><input class="inp" type="date" id="reDe" value="2026-07-01"></div>
-            <div class="fg"><label class="f">Até</label><input class="inp" type="date" id="reAte" value="2026-09-30"></div>
-            <div class="fg"><label class="f">Tipo de doação</label><select class="inp" id="reCat"><option value="">Todos</option></select></div>
-            <button class="btn btn-rose" style="width:100%;margin-top:8px" onclick="toast('Simulação: o relatório em PDF seria baixado agora.')"><svg class="i" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>Baixar PDF</button>
-            <button class="btn btn-ghost" style="width:100%;margin-top:10px" onclick="toast('Simulação: o relatório seria enviado para a impressora.')"><svg class="i" viewBox="0 0 24 24"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>Imprimir</button>
+            <h2 class="serif" style="font-size:17px;font-weight:600;margin:0 0 18px">Montar relatório</h2>
+            <div class="fg"><label class="f" for="reTipo">Tipo de relatório</label><select class="inp" id="reTipo"><option value="c">Completo (doações, estoque e entregas)</option><option value="e">Somente doações</option><option value="s">Somente entregas</option></select></div>
+            <div class="fg"><label class="f" for="reDe">Data inicial</label><input class="inp" type="date" id="reDe" value="2026-07-01"></div>
+            <div class="fg"><label class="f" for="reAte">Data final</label><input class="inp" type="date" id="reAte" value="2026-09-30"></div>
+            <div class="fg"><label class="f" for="reCat">Categoria</label><select class="inp" id="reCat"><option value="">Todas</option></select></div>
+            <button class="btn btn-rose" style="width:100%;margin-top:8px" onclick="toast('Relatório gerado (simulação: no sistema real o PDF seria baixado).')"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>Baixar PDF</button>
+            <button class="btn btn-ghost" style="width:100%;margin-top:10px" onclick="toast('Relatório enviado para impressão (simulação).')"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>Imprimir</button>
           </div>
           <div class="card sec" style="padding-bottom:12px" id="rePrev"></div>
         </div>
@@ -419,19 +491,21 @@
   </main>
 </div>
 
-<div class="toast" id="toast"><svg class="i" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span id="toastTxt"></span></div>
+<div class="toast" id="toast" role="status" aria-live="polite"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span id="toastTxt"></span><button class="undo" id="toastUndo" style="display:none">Desfazer</button><button class="x" aria-label="Fechar aviso" onclick="hideToast()">×</button></div>
+<div class="modal-bg" id="modalBg"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><h2 id="modalTitle"></h2><div id="modalBody"></div><div class="actions" id="modalActions"></div></div></div>
 
 <script>
 /* ===================== DADOS SIMULADOS ===================== */
 const TODAY = '2026-10-03';
 const ICON = {
-  gift:'<svg class="i" viewBox="0 0 24 24" style="color:var(--rose);width:14px;height:14px"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg>',
-  phone:'<svg class="i" viewBox="0 0 24 24" style="color:var(--rose);width:14px;height:14px"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
-  home:'<svg class="i" viewBox="0 0 24 24" style="color:var(--rose);width:14px;height:14px"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>',
-  doc:'<svg class="i" viewBox="0 0 24 24" style="color:var(--rose);width:14px;height:14px"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 12 0V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 12 0v-4"/><circle cx="20" cy="10" r="2"/></svg>',
-  trash:'<svg class="i" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>',
-  check:'<svg class="i" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>',
-  pen:'<svg class="i" viewBox="0 0 24 24"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.4 2.6a1 1 0 0 1 3 3L12.4 14.6a2 2 0 0 1-.85.5l-2.87.84a.5.5 0 0 1-.62-.62l.84-2.87a2 2 0 0 1 .5-.85z"/></svg>'
+  phone:'<svg class="i" viewBox="0 0 24 24" style="color:var(--rose-text);width:14px;height:14px" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
+  home:'<svg class="i" viewBox="0 0 24 24" style="color:var(--rose-text);width:14px;height:14px" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>',
+  doc:'<svg class="i" viewBox="0 0 24 24" style="color:var(--rose-text);width:14px;height:14px" aria-hidden="true"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 12 0V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 12 0v-4"/><circle cx="20" cy="10" r="2"/></svg>',
+  truck:'<svg class="i" viewBox="0 0 24 24" style="color:var(--green-text);width:14px;height:14px" aria-hidden="true"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>',
+  trash:'<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>',
+  alert:'<svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="margin-top:2px"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>',
+  pen:'<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.4 2.6a1 1 0 0 1 3 3L12.4 14.6a2 2 0 0 1-.85.5l-2.87.84a.5.5 0 0 1-.62-.62l.84-2.87a2 2 0 0 1 .5-.85z"/></svg>',
+  chev:'<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>'
 };
 const CATS = ['Cesta básica','Cabelo','Prótese de sutiã','Medicamento','Outros materiais'];
 const LOCAIS = ['Depósito','Sala 1 – Prateleira A','Sala 1 – Prateleira B','Armário de medicamentos'];
@@ -444,17 +518,17 @@ const S = {
     {nome:'Mecha de cabelo natural',tipo:'Cabelo',local:'Sala 1 – Prateleira A',qtd:18,min:5},
     {nome:'Prótese de sutiã (M)',tipo:'Prótese de sutiã',local:'Sala 1 – Prateleira B',qtd:6,min:8},
     {nome:'Prótese de sutiã (G)',tipo:'Prótese de sutiã',local:'Sala 1 – Prateleira B',qtd:11,min:5},
-    {nome:'Ondansetrona 8mg (cx)',tipo:'Medicamento',local:'Armário de medicamentos',qtd:3,min:5},
+    {nome:'Ondansetrona 8mg (caixa)',tipo:'Medicamento',local:'Armário de medicamentos',qtd:3,min:5},
     {nome:'Suplemento alimentar',tipo:'Outros materiais',local:'Depósito',qtd:25,min:10},
-    {nome:'Fralda geriátrica (pct)',tipo:'Outros materiais',local:'Depósito',qtd:30,min:10}
+    {nome:'Fralda geriátrica (pacote)',tipo:'Outros materiais',local:'Depósito',qtd:30,min:10}
   ],
   hist:[
-    {data:'2026-10-02',mov:'Entrada',item:'Cesta básica',qtd:15,quem:'Supermercado Bom Preço',vol:'Ana Lúcia'},
-    {data:'2026-10-01',mov:'Saída',item:'Prótese de sutiã (M)',qtd:1,quem:'Maria das Graças Silva',vol:'Teresa'},
-    {data:'2026-09-30',mov:'Saída',item:'Cesta básica',qtd:2,quem:'Família Oliveira',vol:'Ana Lúcia'},
-    {data:'2026-09-28',mov:'Entrada',item:'Mecha de cabelo natural',qtd:6,quem:'Salão Bela Flor',vol:'Rosângela'},
-    {data:'2026-09-26',mov:'Entrada',item:'Ondansetrona 8mg (cx)',qtd:4,quem:'Farmácia Popular',vol:'Teresa'},
-    {data:'2026-09-25',mov:'Saída',item:'Ondansetrona 8mg (cx)',qtd:2,quem:'Joana Ferreira',vol:'Teresa'}
+    {id:1,data:'2026-10-02',mov:'Doação',item:'Cesta básica',qtd:15,quem:'Supermercado Bom Preço',vol:'Ana Lúcia'},
+    {id:2,data:'2026-10-01',mov:'Entrega',item:'Prótese de sutiã (M)',qtd:1,quem:'Maria das Graças Silva',vol:'Teresa',pac:1},
+    {id:3,data:'2026-09-30',mov:'Entrega',item:'Cesta básica',qtd:2,quem:'Família Oliveira',vol:'Ana Lúcia',pac:3},
+    {id:4,data:'2026-09-28',mov:'Doação',item:'Mecha de cabelo natural',qtd:6,quem:'Salão Bela Flor',vol:'Rosângela'},
+    {id:5,data:'2026-09-26',mov:'Doação',item:'Ondansetrona 8mg (caixa)',qtd:4,quem:'Farmácia Popular',vol:'Teresa'},
+    {id:6,data:'2026-09-25',mov:'Entrega',item:'Ondansetrona 8mg (caixa)',qtd:2,quem:'Joana Ferreira',vol:'Teresa',pac:2}
   ],
   base:{doa:28,ent:19},
   pacientes:[
@@ -463,38 +537,79 @@ const S = {
      notas:[{tipo:'Visita',data:'2026-10-01',por:'Teresa',txt:'Visita domiciliar. Entregue prótese de sutiã. Paciente animada com o tratamento.'},
             {tipo:'Telefonema',data:'2026-09-20',por:'Ana Lúcia',txt:'Confirmou consulta dia 05/10. Precisa de transporte.'},
             {tipo:'Evolução social',data:'2026-09-05',por:'Rosângela',txt:'Filha conseguiu emprego, renda familiar melhorou.'}],
-     doacoes:[{data:'2026-10-01',item:'Prótese de sutiã (M)',qtd:1},{data:'2026-09-15',item:'Cesta básica',qtd:1},{data:'2026-08-15',item:'Cesta básica',qtd:1},{data:'2026-08-02',item:'Mecha de cabelo natural',qtd:1}]},
+     doacoes:[{data:'2026-10-01',item:'Prótese de sutiã (M)',qtd:1,hid:2},{data:'2026-09-15',item:'Cesta básica',qtd:1},{data:'2026-08-15',item:'Cesta básica',qtd:1},{data:'2026-08-02',item:'Mecha de cabelo natural',qtd:1}]},
     {id:2,nome:'Joana Ferreira',curto:'Joana Ferreira',cancer:'Ovário',hosp:'IMIP',status:'Ativo',casa:3,criancas:false,idosos:true,
      needs:['Transporte','Suplementos alimentares'],tel:'(81) 98765-1122',end:'Av. Norte, 455 - Casa Amarela',medico:'Dr. Paulo Mendes',doc:'234.567.890-11',nasc:'1975-09-03',obs:'',
      notas:[{tipo:'Telefonema',data:'2026-09-24',por:'Teresa',txt:'Relatou enjoo forte após a quimioterapia. Separada ondansetrona.'},
             {tipo:'Visita',data:'2026-09-10',por:'Ana Lúcia',txt:'Primeira visita. Mora com a mãe e o marido.'}],
-     doacoes:[{data:'2026-09-25',item:'Ondansetrona 8mg (cx)',qtd:2}]},
+     doacoes:[{data:'2026-09-25',item:'Ondansetrona 8mg (caixa)',qtd:2,hid:6}]},
     {id:3,nome:'Família Oliveira (Sr. José)',curto:'Família Oliveira',cancer:'Próstata',hosp:'Hospital Universitário',status:'Ativo',casa:5,criancas:true,idosos:true,
      needs:['Cesta básica','Fraldas geriátricas'],tel:'(81) 99123-4567',end:'Rua do Sol, 78 - Afogados',medico:'Dr. Marcos Lima',doc:'345.678.901-22',nasc:'1952-01-20',obs:'',
      notas:[{tipo:'Visita',data:'2026-09-30',por:'Ana Lúcia',txt:'Entregues 2 cestas básicas. Neto ajuda nos cuidados.'}],
-     doacoes:[{data:'2026-09-30',item:'Cesta básica',qtd:2}]},
+     doacoes:[{data:'2026-09-30',item:'Cesta básica',qtd:2,hid:3}]},
     {id:4,nome:'Cláudia Ramos',curto:'Cláudia Ramos',cancer:'Mama',hosp:'Hospital do Câncer',status:'Alta/Remissão',casa:2,criancas:false,idosos:false,
      needs:[],tel:'(81) 98888-7766',end:'Rua Real, 32 - Torre',medico:'Dra. Helena Costa',doc:'456.789.012-33',nasc:'1981-06-15',obs:'',
      notas:[{tipo:'Evolução social',data:'2026-08-20',por:'Rosângela',txt:'Recebeu alta. Segue em acompanhamento trimestral.'}],
      doacoes:[{data:'2026-05-10',item:'Mecha de cabelo natural',qtd:1}]}
   ],
-  rep:[ /* 3º trimestre 2026 — dados fixos da prévia */
-    {cat:'Cesta básica',rec:60,ent:38},{cat:'Cabelo',rec:14,ent:6},{cat:'Prótese de sutiã',rec:12,ent:9},
-    {cat:'Medicamento',rec:20,ent:17},{cat:'Outros materiais',rec:70,ent:40}
-  ],
+  rep:[{cat:'Cesta básica',rec:60,ent:38},{cat:'Cabelo',rec:14,ent:6},{cat:'Prótese de sutiã',rec:12,ent:9},{cat:'Medicamento',rec:20,ent:17},{cat:'Outros materiais',rec:70,ent:40}],
   famAtendidas:34
 };
+let nextHid = 100;
 
 /* ===================== HELPERS ===================== */
 const $ = s => document.querySelector(s);
-const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const br = d => { const [y,m,dd] = d.split('-'); return `${dd}/${m}/${y}`; };
 const brShort = d => { const [,m,dd] = d.split('-'); return `${dd}/${m}`; };
-const movBadge = m => `<span class="badge ${m==='Entrada'?'b-green':'b-rose'}">${m}</span>`;
+const MOV_CLASS = {'Doação':'b-rose','Entrega':'b-green','Estorno':'b-grey'};
+const movBadge = m => `<span class="badge ${MOV_CLASS[m]}">${m}</span>`;
 const statusBadge = s => `<span class="badge ${s==='Ativo'?'b-green':s==='Alta/Remissão'?'b-amber':'b-grey'}">${s}</span>`;
 const initial = n => (n.trim()[0] || '?').toUpperCase();
+const item = nome => S.estoque.find(i=>i.nome===nome);
+
+/* Toast: só para sucesso, com "Desfazer" opcional */
 let toastT;
-function toast(msg){ $('#toastTxt').textContent = msg; $('#toast').classList.add('on'); clearTimeout(toastT); toastT = setTimeout(()=>$('#toast').classList.remove('on'), 2600); }
+function toast(msg, undoFn){
+  $('#toastTxt').textContent = msg;
+  const u = $('#toastUndo');
+  if(undoFn){ u.style.display=''; u.onclick = ()=>{ hideToast(); undoFn(); }; } else u.style.display='none';
+  $('#toast').classList.add('on'); clearTimeout(toastT);
+  toastT = setTimeout(hideToast, undoFn ? 8000 : 3500);
+}
+function hideToast(){ $('#toast').classList.remove('on'); }
+
+/* Modal de confirmação */
+function modal(title, bodyHtml, buttons){
+  $('#modalTitle').textContent = title; $('#modalBody').innerHTML = bodyHtml;
+  $('#modalActions').innerHTML = '';
+  buttons.forEach(b=>{ const el=document.createElement('button'); el.className='btn '+(b.cls||'btn-ghost'); el.textContent=b.label;
+    el.onclick=()=>{ if(b.keep!==true) closeModal(); b.fn && b.fn(); }; $('#modalActions').appendChild(el); });
+  $('#modalBg').classList.add('on'); setTimeout(()=>$('#modalActions').lastChild.focus(),30);
+}
+function closeModal(){ $('#modalBg').classList.remove('on'); }
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeModal(); toggleMenu(false); } });
+
+/* Erros: sempre junto ao campo + resumo no topo quando houver mais de um */
+function setErr(id, msg){
+  const f = document.getElementById(id), e = document.getElementById(id+'-err');
+  if(f){ f.classList.toggle('invalid', !!msg); f.setAttribute('aria-invalid', msg?'true':'false'); if(e) f.setAttribute('aria-describedby', id+'-err'); }
+  if(e) e.innerHTML = msg ? ICON.alert + esc(msg) : '';
+}
+function summary(boxId, errs){
+  const box = document.getElementById(boxId);
+  if(!errs.length){ box.innerHTML=''; return; }
+  box.innerHTML = `<div class="summary" role="alert">${ICON.alert}<div>${errs.length===1?'Corrija o campo destacado abaixo.':`Corrija os ${errs.length} campos destacados abaixo.`}</div></div>`;
+  const first = document.getElementById(errs[0]); if(first){ first.focus(); }
+}
+
+/* rótulos visíveis ligados aos campos */
+function linkLabels(root=document){
+  root.querySelectorAll('label.f:not([for])').forEach(l=>{
+    const f = l.parentElement.querySelector('input,select,textarea');
+    if(f){ if(!f.id) f.id = 'f'+Math.random().toString(36).slice(2,8); l.htmlFor = f.id; }
+  });
+}
 
 /* ===================== NAVEGAÇÃO ===================== */
 const NAV_OF = {detalhes:'pacientes'};
@@ -503,105 +618,146 @@ function go(page, opts={}){
   if(page === 'detalhes' && opts.id) curPac = opts.id;
   document.querySelectorAll('.page').forEach(p => p.classList.toggle('on', p.id === 'p-'+page));
   const navKey = NAV_OF[page] || page;
-  document.querySelectorAll('.nav a').forEach(a => a.classList.toggle('active', a.dataset.go === navKey));
-  current = page;
-  const R = {inicio:renderInicio, pacientes:renderPacientes, novo:renderNovo, detalhes:()=>renderDetalhes(opts.tab), doacao:()=>renderDoacao(opts.keepBanner), estoque:renderEstoque, saida:()=>renderSaida(opts.keepBanner), historico:renderHistorico, relatorios:renderRelatorios};
+  document.querySelectorAll('.nav a').forEach(a => { const on = a.dataset.go === navKey; a.classList.toggle('active', on); on ? a.setAttribute('aria-current','page') : a.removeAttribute('aria-current'); });
+  current = page; toggleMenu(false);
+  const R = {inicio:renderInicio, pacientes:renderPacientes, cadastro:renderNovo, detalhes:()=>renderDetalhes(opts.tab), doacao:renderDoacao, estoque:renderEstoque, entrega:renderEntrega, historico:renderHistorico, relatorios:renderRelatorios};
   R[page] && R[page]();
+  linkLabels();
   const h = page === 'detalhes' ? 'detalhes-' + curPac : page;
   if(location.hash !== '#'+h) history.replaceState(null,'','#'+h);
   window.scrollTo(0,0);
+  const h1 = document.querySelector('#p-'+page+' h1'); if(h1 && opts.focus!==false){ h1.setAttribute('tabindex','-1'); }
 }
 document.addEventListener('click', e => { const el = e.target.closest('[data-go]'); if(el){ e.preventDefault(); go(el.dataset.go); } });
+function toggleMenu(open){ $('#sidebar').classList.toggle('open', !!open); $('#scrim').classList.toggle('on', !!open); }
 
 $('#loginForm').addEventListener('submit', e => {
   e.preventDefault();
-  if(!$('#lgUser').value.trim() || !$('#lgPass').value.trim()){ $('#lgErr').style.display='block'; return; }
-  $('#lgErr').style.display='none';
+  setErr('lgUser', $('#lgUser').value.trim() ? '' : 'Informe seu e-mail ou usuário.');
+  setErr('lgPass', $('#lgPass').value.trim() ? '' : 'Informe sua senha.');
+  if(!$('#lgUser').value.trim() || !$('#lgPass').value.trim()) return;
   $('#login').style.display='none'; $('#app').classList.add('on');
   go('inicio');
 });
 function logout(){ $('#app').classList.remove('on'); $('#login').style.display='flex'; history.replaceState(null,'','#login'); }
+function openForgot(){
+  modal('Recuperar acesso', `<p>Informe o e-mail cadastrado. Vamos enviar um link para você criar uma nova senha.</p>
+    <div class="fg"><label class="f" for="fgMail">E-mail</label><input class="inp" id="fgMail" value="${esc($('#lgUser').value)}"><div class="ferr" id="fgMail-err"></div></div>
+    <p class="hint">Se não lembrar o e-mail, fale com a coordenação da Ampara.</p>`,
+    [{label:'Cancelar'},{label:'Enviar link',cls:'btn-rose',keep:true,fn:()=>{
+      const v=$('#fgMail').value.trim();
+      if(!/^\S+@\S+\.\S+$/.test(v)){ setErr('fgMail','Digite um e-mail válido, por exemplo nome@ampara.org.'); return; }
+      closeModal(); toast('Link de recuperação enviado para '+v+' (simulação).');
+    }}]);
+}
 
 /* ===================== INÍCIO ===================== */
+function greeting(){ const h=new Date().getHours(); return h<12?'Bom dia':h<18?'Boa tarde':'Boa noite'; }
 function renderInicio(){
-  const doaMes = S.base.doa + S.hist.filter(h=>h.novo && h.mov==='Entrada').length;
-  const entMes = S.base.ent + S.hist.filter(h=>h.novo && h.mov==='Saída').length;
+  $('#greet').textContent = `${greeting()}, Ana Lúcia`;
+  const live = S.hist.filter(h=>h.novo && !h.estornado);
   $('#stPac').textContent = S.pacientes.filter(p=>p.status==='Ativo').length;
   $('#stEst').textContent = S.estoque.reduce((a,i)=>a+i.qtd,0);
-  $('#stDoa').textContent = doaMes; $('#stEnt').textContent = entMes;
-  $('#homeMov').innerHTML = sortedHist().slice(0,5).map(h=>`<tr><td class="m">${br(h.data)}</td><td>${movBadge(h.mov)}</td><td class="b">${h.qtd}× ${esc(h.item)}</td><td class="m">${esc(h.quem)}</td></tr>`).join('');
+  $('#stDoa').textContent = S.base.doa + live.filter(h=>h.mov==='Doação').length;
+  $('#stEnt').textContent = S.base.ent + live.filter(h=>h.mov==='Entrega').length;
+  $('#homeMov').innerHTML = sortedHist().slice(0,5).map(h=>`<tr class="${h.estornado?'voided':''}"><td class="m">${br(h.data)}</td><td>${movBadge(h.mov)}</td><td class="b">${h.qtd}× ${esc(h.item)}</td><td class="m">${esc(h.quem)}</td></tr>`).join('');
   const low = S.estoque.filter(i=>i.qtd < i.min);
-  $('#homeLow').innerHTML = low.length ? low.map(i=>`<div class="low" data-go="estoque"><b>${esc(i.nome)}</b><small>Restam ${i.qtd} (mínimo ${i.min})</small></div>`).join('') : '<div class="empty" style="padding:20px">Nenhum item abaixo do mínimo.</div>';
+  $('#homeLow').innerHTML = low.length ? low.map(i=>`<button class="low" data-go="estoque"><span><b>${esc(i.nome)}</b><small>Restam ${i.qtd} (mínimo ${i.min})</small></span><span class="go">${ICON.chev}</span></button>`).join('') : '<div class="empty" style="padding:20px">Nenhum item abaixo do mínimo.</div>';
 }
-const sortedHist = () => [...S.hist].sort((a,b)=> b.data.localeCompare(a.data) || (b.seq||0)-(a.seq||0));
+const sortedHist = () => [...S.hist].sort((a,b)=> b.data.localeCompare(a.data) || b.id-a.id);
 
 /* ===================== PACIENTES ===================== */
 let pacFiltro = 'Todos';
+const PAC_FILTERS = {'Todos':()=>true,'Ativo':p=>p.status==='Ativo','Alta/Remissão':p=>p.status==='Alta/Remissão','Inativos':p=>p.status==='Transferido'||p.status==='Óbito'};
 function renderPacientes(){
-  $('#pacChips').innerHTML = ['Todos',...STATUS].map(s=>`<button class="chip ${s===pacFiltro?'on':''}" onclick="pacFiltro='${s}';renderPacientes()">${s==='Ativo'?'Ativo':s}</button>`).join('');
-  const q = $('#pacSearch').value.trim().toLowerCase();
-  const list = S.pacientes.filter(p => (pacFiltro==='Todos'||p.status===pacFiltro) && (!q || p.nome.toLowerCase().includes(q) || p.doc.replace(/\D/g,'').includes(q.replace(/\D/g,'')||'###')));
+  $('#pacChips').innerHTML = Object.keys(PAC_FILTERS).map(s=>`<button class="chip ${s===pacFiltro?'on':''}" aria-pressed="${s===pacFiltro}" onclick="pacFiltro='${s}';renderPacientes()">${s}</button>`).join('');
+  const q = $('#pacSearch').value.trim().toLowerCase(), qd = q.replace(/\D/g,'');
+  const list = S.pacientes.filter(p => PAC_FILTERS[pacFiltro](p) && (!q || p.nome.toLowerCase().includes(q) || (qd && p.doc.replace(/\D/g,'').includes(qd))));
   $('#pacGrid').innerHTML = list.length ? list.map(p=>`
-    <div class="card pcard" onclick="go('detalhes',{id:${p.id},tab:'pront'})">
-      <div class="pc-top"><div class="pav">${initial(p.nome)}</div><div><b>${esc(p.nome)}</b><small>${esc(p.cancer)} · ${esc(p.hosp)}</small></div>${statusBadge(p.status)}</div>
+    <div class="card pcard" tabindex="0" role="link" aria-label="Abrir ficha de ${esc(p.nome)}" onclick="go('detalhes',{id:${p.id},tab:'pront'})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
+      <div class="pc-top"><div class="pav" aria-hidden="true">${initial(p.nome)}</div><div><b>${esc(p.nome)}</b><small>${esc(p.cancer)} · ${esc(p.hosp)}</small></div>${statusBadge(p.status)}</div>
       <div class="pc-tags"><span class="tag">${p.casa} na casa</span>${p.criancas?'<span class="tag">Crianças</span>':''}${p.idosos?'<span class="tag">Idosos</span>':''}${p.needs.map(n=>`<span class="tag need">${esc(n)}</span>`).join('')}</div>
+      <div class="pc-foot">Ver ficha ${ICON.chev}</div>
     </div>`).join('') : '<div class="empty" style="grid-column:1/-1">Nenhum paciente encontrado.</div>';
 }
 $('#pacSearch').addEventListener('input', renderPacientes);
 
-/* ===================== FORMULÁRIO DE CADASTRO (novo / editar) ===================== */
+/* ===================== FORMULÁRIO DE CADASTRO ===================== */
 function cadastroForm(p, prefix){
-  const v = (k)=> p ? esc(p[k]||'') : '';
+  const v = k => p ? esc(p[k]||'') : '';
+  const R = '<span class="req">*</span>';
   return `
-  <div class="card sec" style="margin-bottom:20px"><div class="sec-h"><span class="num">1</span><h3>Dados pessoais</h3></div>
-    <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px">
-      <div class="fg"><label class="f">Nome completo</label><input class="inp" id="${prefix}nome" value="${v('nome')}"></div>
+  <div class="card sec" style="margin-bottom:20px"><div class="sec-h"><span class="num">1</span><h2>Dados pessoais</h2></div>
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px" class="g-a">
+      <div class="fg"><label class="f">Nome completo ${R}</label><input class="inp" id="${prefix}nome" value="${v('nome')}"><div class="ferr" id="${prefix}nome-err"></div></div>
       <div class="fg"><label class="f">CPF ou RG</label><input class="inp" id="${prefix}doc" value="${v('doc')}"></div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px">
-      <div class="fg"><label class="f">Data de nascimento</label><input class="inp" type="${p?'date':'text'}" onfocus="this.type='date'" placeholder="dd/mm/aaaa" id="${prefix}nasc" value="${v('nasc')}"></div>
-      <div class="fg"><label class="f">Telefone</label><input class="inp" id="${prefix}tel" value="${v('tel')}"></div>
-      <div class="fg"><label class="f">Status do acompanhamento</label><select class="inp" id="${prefix}status">${p?'':'<option value=""></option>'}${STATUS.map(s=>`<option ${p&&p.status===s?'selected':''}>${s}</option>`).join('')}</select></div>
+    <div class="grid3">
+      <div class="fg"><label class="f">Data de nascimento</label><input class="inp" type="date" id="${prefix}nasc" value="${v('nasc')}"></div>
+      <div class="fg"><label class="f">Telefone ${R}</label><input class="inp" id="${prefix}tel" value="${v('tel')}" placeholder="(81) 99999-9999"><div class="ferr" id="${prefix}tel-err"></div></div>
+      <div class="fg"><label class="f">Status do acompanhamento</label><select class="inp" id="${prefix}status">${STATUS.map(s=>`<option ${(p?p.status:'Ativo')===s?'selected':''}>${s}</option>`).join('')}</select></div>
     </div>
     <div class="fg"><label class="f">Endereço</label><input class="inp" id="${prefix}end" value="${v('end')}"></div>
   </div>
   <div class="grid2" style="margin-bottom:20px">
-    <div class="card sec"><div class="sec-h"><span class="num">2</span><h3>Perfil clínico</h3></div>
+    <div class="card sec"><div class="sec-h"><span class="num">2</span><h2>Perfil clínico</h2></div>
       <div class="fg"><label class="f">Tipo de câncer</label><input class="inp" id="${prefix}cancer" value="${v('cancer')}"></div>
       <div class="fg"><label class="f">Hospital do tratamento</label><input class="inp" id="${prefix}hosp" value="${v('hosp')}"></div>
       <div class="fg"><label class="f">Médico(a) responsável</label><input class="inp" id="${prefix}medico" value="${v('medico')}"></div>
     </div>
-    <div class="card sec"><div class="sec-h"><span class="num">3</span><h3>Composição familiar</h3></div>
+    <div class="card sec"><div class="sec-h"><span class="num">3</span><h2>Composição familiar</h2></div>
       <div class="fg"><label class="f">Quantas pessoas moram na casa?</label><input class="inp" type="number" min="1" id="${prefix}casa" value="${p?p.casa:1}"></div>
-      <div class="toggle ${p&&p.criancas?'on':''}" id="${prefix}criancas" onclick="this.classList.toggle('on')">Há crianças na família</div>
-      <div class="toggle ${p&&p.idosos?'on':''}" id="${prefix}idosos" onclick="this.classList.toggle('on')">Há idosos na família</div>
+      <button type="button" class="toggle" id="${prefix}criancas" aria-pressed="${!!(p&&p.criancas)}" onclick="this.setAttribute('aria-pressed', this.getAttribute('aria-pressed')!=='true')">Há crianças na família</button>
+      <button type="button" class="toggle" id="${prefix}idosos" aria-pressed="${!!(p&&p.idosos)}" onclick="this.setAttribute('aria-pressed', this.getAttribute('aria-pressed')!=='true')">Há idosos na família</button>
     </div>
   </div>
-  <div class="card sec" style="padding-bottom:20px"><div class="sec-h"><span class="num">4</span><h3>Principais necessidades</h3></div>
-    <div id="${prefix}needs">${NEEDS.map(n=>`<button type="button" class="need-chip ${p&&p.needs.includes(n)?'on':''}" onclick="this.classList.toggle('on')">${n}</button>`).join('')}</div>
-    <label class="f" style="margin-top:6px">Observações</label><textarea class="inp" id="${prefix}obs">${v('obs')}</textarea>
+  <div class="card sec" style="padding-bottom:20px"><div class="sec-h"><span class="num">4</span><h2>Principais necessidades</h2></div>
+    <div id="${prefix}needs" role="group" aria-label="Principais necessidades">${NEEDS.map(n=>`<button type="button" class="need-chip" aria-pressed="${!!(p&&p.needs.includes(n))}" onclick="this.setAttribute('aria-pressed', this.getAttribute('aria-pressed')!=='true')">${n}</button>`).join('')}</div>
+    <div class="fg" style="margin-top:6px"><label class="f">Observações</label><textarea class="inp" id="${prefix}obs">${v('obs')}</textarea></div>
   </div>`;
 }
 function lerForm(prefix){
   const g = id => $('#'+prefix+id);
   return {nome:g('nome').value.trim(), doc:g('doc').value.trim(), nasc:g('nasc').value, tel:g('tel').value.trim(), status:g('status').value||'Ativo',
     end:g('end').value.trim(), cancer:g('cancer').value.trim(), hosp:g('hosp').value.trim(), medico:g('medico').value.trim(),
-    casa:Math.max(1, parseInt(g('casa').value)||1), criancas:g('criancas').classList.contains('on'), idosos:g('idosos').classList.contains('on'),
-    needs:[...document.querySelectorAll('#'+prefix+'needs .need-chip.on')].map(b=>b.textContent), obs:g('obs').value.trim()};
+    casa:Math.max(1, parseInt(g('casa').value)||1), criancas:g('criancas').getAttribute('aria-pressed')==='true', idosos:g('idosos').getAttribute('aria-pressed')==='true',
+    needs:[...document.querySelectorAll('#'+prefix+'needs .need-chip[aria-pressed="true"]')].map(b=>b.textContent), obs:g('obs').value.trim()};
+}
+function validarCadastro(prefix){
+  const errs=[];
+  const nome=$('#'+prefix+'nome').value.trim(), tel=$('#'+prefix+'tel').value.trim();
+  setErr(prefix+'nome', nome ? '' : 'Informe o nome completo do paciente.'); if(!nome) errs.push(prefix+'nome');
+  const telOk = tel.replace(/\D/g,'').length >= 10;
+  setErr(prefix+'tel', telOk ? '' : (tel ? 'Telefone incompleto: use DDD + número.' : 'Informe um telefone para contato.')); if(!telOk) errs.push(prefix+'tel');
+  return errs;
 }
 
-/* ===================== NOVO PACIENTE ===================== */
+/* ===================== CADASTRAR PACIENTE (rascunho preservado) ===================== */
+let novoRendered = false;
 function renderNovo(){
-  $('#novoWrap').innerHTML = `<div id="novoErr"></div>` + cadastroForm(null,'nv-') +
-   `<div class="actions"><button class="btn btn-ghost" data-go="pacientes">Cancelar</button><button class="btn btn-rose" onclick="salvarNovo()">Salvar cadastro</button></div>`;
+  if(novoRendered) return;   // o rascunho continua quando a pessoa sai e volta
+  $('#novoWrap').innerHTML = `<div id="novoSummary"></div>` + cadastroForm(null,'nv-') +
+   `<div class="actions"><button class="btn btn-ghost" onclick="descartarNovo()">Descartar</button><button class="btn btn-rose" onclick="salvarNovo()">Salvar cadastro</button></div>`;
+  novoRendered = true;
 }
-function salvarNovo(){
+function descartarNovo(){
+  modal('Descartar cadastro?','<p>Os dados digitados neste cadastro serão apagados.</p>',[{label:'Continuar editando'},{label:'Descartar',cls:'btn-danger',fn:()=>{ novoRendered=false; go('pacientes'); }}]);
+}
+function salvarNovo(force){
+  const errs = validarCadastro('nv-'); summary('novoSummary', errs);
+  if(errs.length){ window.scrollTo(0,0); return; }
   const d = lerForm('nv-');
-  if(!d.nome){ $('#novoErr').innerHTML = `<div class="banner err">Informe o nome completo para salvar o cadastro.</div>`; $('#nv-nome').focus(); window.scrollTo(0,0); return; }
+  const dup = S.pacientes.find(p => p.nome.toLowerCase()===d.nome.toLowerCase() || (d.doc && p.doc.replace(/\D/g,'')===d.doc.replace(/\D/g,'')));
+  if(dup && !force){
+    modal('Já existe um cadastro parecido', `<p><b>${esc(dup.nome)}</b><br>${esc(dup.doc||'sem documento')} · ${esc(dup.tel||'')}</p><p>Verifique se não é a mesma pessoa ou família antes de cadastrar de novo.</p>`,
+      [{label:'Abrir cadastro existente',fn:()=>go('detalhes',{id:dup.id,tab:'pront'})},{label:'Cadastrar mesmo assim',cls:'btn-rose',fn:()=>salvarNovo(true)}]);
+    return;
+  }
   const id = Math.max(...S.pacientes.map(p=>p.id))+1;
   S.pacientes.unshift({id, ...d, curto:d.nome, cancer:d.cancer||'Não informado', hosp:d.hosp||'Não informado', notas:[], doacoes:[]});
-  pacFiltro='Todos'; $('#pacSearch').value='';
-  go('pacientes'); toast('Paciente cadastrado com sucesso.');
+  novoRendered = false; pacFiltro='Todos'; $('#pacSearch').value='';
+  go('pacientes');
+  toast(`${d.nome} foi cadastrado(a).`, ()=>{ S.pacientes = S.pacientes.filter(p=>p.id!==id); if(current==='pacientes') renderPacientes(); toast('Cadastro desfeito.'); });
 }
 
 /* ===================== DETALHES ===================== */
@@ -613,127 +769,211 @@ function renderDetalhes(tab){
   $('#dtStatus').innerHTML = STATUS.map(s=>`<option ${p.status===s?'selected':''}>${s}</option>`).join('');
   $('#dtSide').innerHTML = `
     <div class="card side-card">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px"><div class="pav">${initial(p.nome)}</div>${statusBadge(p.status)}</div>
-      <div class="row">${ICON.phone}${esc(p.tel||'—')}</div>
-      <div class="row">${ICON.home}${esc(p.end||'—')}</div>
-      <div class="row">${ICON.doc}${esc(p.medico||'—')}</div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px"><div class="pav" aria-hidden="true">${initial(p.nome)}</div>${statusBadge(p.status)}</div>
+      <div class="row">${ICON.phone}<span class="sr">Telefone:</span>${esc(p.tel||'—')}</div>
+      <div class="row">${ICON.home}<span class="sr">Endereço:</span>${esc(p.end||'—')}</div>
+      <div class="row">${ICON.doc}<span class="sr">Médico(a):</span>${esc(p.medico||'—')}</div>
     </div>
-    <div class="card side-card"><h4>Família</h4><div><span class="big">${p.casa}</span><span style="font-size:13px;color:var(--ink-2)">pessoas na casa</span></div>
+    <div class="card side-card"><h2>Família</h2><div><span class="big">${p.casa}</span><span style="font-size:14px;color:var(--ink-2)">pessoas na casa</span></div>
       <div class="pc-tags" style="margin-top:10px">${p.criancas?'<span class="tag">Crianças</span>':''}${p.idosos?'<span class="tag">Idosos</span>':''}</div></div>
-    <div class="card side-card"><h4>Necessidades</h4><div class="pc-tags" style="margin-top:0">${p.needs.length?p.needs.map(n=>`<span class="tag need">${esc(n)}</span>`).join(''):'<small style="color:var(--muted)">Nenhuma registrada</small>'}</div></div>`;
-  document.querySelectorAll('#dtTabs button').forEach(b=>b.classList.toggle('on', b.dataset.tab===dtTab));
+    <div class="card side-card"><h2>Necessidades</h2><div class="pc-tags" style="margin-top:0">${p.needs.length?p.needs.map(n=>`<span class="tag need">${esc(n)}</span>`).join(''):'<small style="color:var(--muted)">Nenhuma registrada</small>'}</div></div>`;
+  document.querySelectorAll('#dtTabs button').forEach(b=>b.setAttribute('aria-selected', b.dataset.tab===dtTab));
   const B = $('#dtBody');
   if(dtTab==='pront'){
     B.innerHTML = `
       <div class="card note-box">
-        <div class="chips" style="margin-bottom:14px">${['Visita','Telefonema','Evolução social','Intercorrência'].map(t=>`<button class="chip ${t===noteTipo?'on':''}" onclick="noteTipo='${t}';document.querySelectorAll('.note-box .chip').forEach(c=>c.classList.toggle('on',c.textContent==='${t}'))">${t}</button>`).join('')}</div>
+        <div class="chips" style="margin-bottom:14px" role="group" aria-label="Tipo de nota">${['Visita','Telefonema','Evolução social','Intercorrência'].map(t=>`<button class="chip ${t===noteTipo?'on':''}" aria-pressed="${t===noteTipo}" onclick="setNoteTipo('${t}')">${t}</button>`).join('')}</div>
+        <label class="sr" for="noteTxt">Texto da nota</label>
         <textarea class="inp" id="noteTxt" placeholder="Escreva uma nota curta sobre o acompanhamento..."></textarea>
+        <div class="ferr" id="noteTxt-err"></div>
         <div style="display:flex;justify-content:flex-end;margin-top:14px"><button class="btn btn-rose btn-sm" onclick="addNota()">${ICON.pen}Adicionar nota</button></div>
       </div>
-      <div class="timeline">${p.notas.map(n=>`<div class="card tl"><div class="meta"><span class="badge b-rose">${n.tipo}</span>${br(n.data)} · por ${esc(n.por)}</div><div style="font-size:13px">${esc(n.txt)}</div></div>`).join('') || '<div class="empty">Nenhuma nota registrada ainda.</div>'}</div>`;
+      <div class="timeline">${p.notas.map(n=>`<div class="card tl"><div class="meta"><span class="badge b-rose">${n.tipo}</span>${br(n.data)} · por ${esc(n.por)}</div><div style="font-size:14px">${esc(n.txt)}</div></div>`).join('') || '<div class="empty">Nenhuma nota registrada ainda.</div>'}</div>`;
   } else if(dtTab==='doa'){
     const rows = [...p.doacoes].sort((a,b)=>b.data.localeCompare(a.data));
-    B.innerHTML = `<div class="card tbl-wrap"><table class="t"><thead><tr><th style="background:var(--green-soft)">Data</th><th style="background:var(--green-soft)">Item recebido</th><th style="background:var(--green-soft)">Quantidade</th></tr></thead><tbody>
-      ${rows.length?rows.map(d=>`<tr><td>${br(d.data)}</td><td class="b"><span style="display:inline-flex;gap:8px;align-items:center">${ICON.gift}${esc(d.item)}</span></td><td>${d.qtd}</td></tr>`).join(''):'<tr><td colspan="3" class="empty">Nenhuma doação recebida.</td></tr>'}
+    B.innerHTML = `<div class="card tbl-wrap tscroll"><table class="t"><caption class="sr">Entregas recebidas</caption><thead><tr><th style="background:var(--green-soft)">Data</th><th style="background:var(--green-soft)">Item entregue</th><th class="n" style="background:var(--green-soft)">Quantidade</th></tr></thead><tbody>
+      ${rows.length?rows.map(d=>`<tr><td>${br(d.data)}</td><td class="b"><span style="display:inline-flex;gap:8px;align-items:center">${ICON.truck}${esc(d.item)}</span></td><td class="n">${d.qtd}</td></tr>`).join(''):'<tr><td colspan="3" class="empty">Nenhuma entrega registrada.</td></tr>'}
       </tbody></table></div>`;
   } else {
-    B.innerHTML = cadastroForm(p,'ed-') + `<div class="actions"><button class="btn btn-rose" onclick="salvarEdicao()">Salvar alterações</button></div>`;
+    B.innerHTML = `<div id="edSummary"></div>` + cadastroForm(p,'ed-') + `<div class="actions"><button class="btn btn-rose" onclick="salvarEdicao()">Salvar alterações</button></div>`;
   }
+  linkLabels(B);
 }
+function setNoteTipo(t){ noteTipo=t; document.querySelectorAll('.note-box .chip').forEach(c=>{const on=c.textContent===t; c.classList.toggle('on',on); c.setAttribute('aria-pressed',on);}); }
 document.querySelectorAll('#dtTabs button').forEach(b=>b.addEventListener('click',()=>renderDetalhes(b.dataset.tab)));
-$('#dtStatus').addEventListener('change', e=>{ const p=S.pacientes.find(x=>x.id===curPac); p.status=e.target.value; renderDetalhes(); toast('Status atualizado para '+p.status+'.'); });
+
+/* troca de status: confirma quando o efeito é grande e permite desfazer */
+const STATUS_EFFECT = {
+  'Óbito':'A família deixa de aparecer na lista de entregas e entra no filtro "Inativos". O histórico é mantido.',
+  'Transferido':'O paciente entra no filtro "Inativos". O histórico é mantido.',
+  'Alta/Remissão':'O paciente deixa de contar como ativo no Início.',
+  'Ativo':'O paciente volta a contar como ativo.'
+};
+$('#dtStatus').addEventListener('change', e=>{
+  const p=S.pacientes.find(x=>x.id===curPac), old=p.status, nw=e.target.value;
+  const apply = ()=>{ p.status=nw; renderDetalhes(); toast(`Status de ${p.curto} alterado para ${nw}.`, ()=>{ p.status=old; if(current==='detalhes') renderDetalhes(); toast('Alteração de status desfeita.'); }); };
+  if(nw==='Óbito' || nw==='Transferido'){
+    modal(`Alterar status para "${nw}"?`, `<p><b>${esc(p.nome)}</b></p><p>${STATUS_EFFECT[nw]}</p>`,
+      [{label:'Cancelar',fn:()=>{ e.target.value=old; }},{label:`Confirmar: ${nw}`,cls:'btn-rose',fn:apply}]);
+  } else apply();
+});
 function addNota(){
   const t = $('#noteTxt').value.trim();
-  if(!t){ $('#noteTxt').focus(); $('#noteTxt').style.borderColor='#d9534f'; return; }
-  S.pacientes.find(x=>x.id===curPac).notas.unshift({tipo:noteTipo,data:TODAY,por:'Ana Lúcia',txt:t});
-  renderDetalhes(); toast('Nota adicionada ao prontuário.');
+  if(!t){ setErr('noteTxt','Digite o texto da nota para adicioná-la.'); $('#noteTxt').focus(); return; }
+  const p = S.pacientes.find(x=>x.id===curPac); const n = {tipo:noteTipo,data:TODAY,por:'Ana Lúcia',txt:t};
+  p.notas.unshift(n);
+  renderDetalhes(); toast('Nota adicionada ao acompanhamento.', ()=>{ p.notas = p.notas.filter(x=>x!==n); if(current==='detalhes') renderDetalhes(); toast('Nota removida.'); });
 }
 function salvarEdicao(){
-  const p = S.pacientes.find(x=>x.id===curPac); const d = lerForm('ed-');
-  if(!d.nome){ toast('O nome não pode ficar vazio.'); return; }
-  Object.assign(p, d); renderDetalhes(); toast('Alterações salvas.');
+  const errs = validarCadastro('ed-'); summary('edSummary', errs); if(errs.length) return;
+  const p = S.pacientes.find(x=>x.id===curPac); const old = JSON.parse(JSON.stringify(p));
+  Object.assign(p, lerForm('ed-'));
+  renderDetalhes(); toast('Alterações salvas.', ()=>{ Object.assign(p, old); if(current==='detalhes') renderDetalhes(); toast('Alterações desfeitas.'); });
+}
+
+/* ===================== MOVIMENTAÇÕES (registrar / estornar) ===================== */
+function registrarMov(m){ m.id = nextHid++; m.novo = true; S.hist.push(m); return m; }
+function desfazerMov(m){   // usado pelo "Desfazer" logo após salvar: apaga o lançamento
+  const it = item(m.item); if(it) it.qtd += (m.mov==='Doação' ? -m.qtd : m.qtd);
+  S.hist = S.hist.filter(h=>h!==m);
+  if(m.pac){ const p=S.pacientes.find(x=>x.id===m.pac); p.doacoes = p.doacoes.filter(d=>d.hid!==m.id); }
+}
+function estornar(id){      // usado no Histórico: mantém o registro e lança o estorno
+  const m = S.hist.find(h=>h.id===id); const it = item(m.item);
+  const efeito = m.mov==='Doação' ? -m.qtd : m.qtd;
+  if(m.mov==='Doação' && it && it.qtd < m.qtd){
+    modal('Não é possível estornar', `<p>Restam só ${it.qtd} unidade(s) de ${esc(m.item)} no estoque, menos que as ${m.qtd} desta doação. Estorne antes as entregas feitas com esse item.</p>`,[{label:'Entendi',cls:'btn-rose'}]); return;
+  }
+  modal('Estornar movimentação?', `<p><b>${m.mov} de ${m.qtd}× ${esc(m.item)}</b> em ${br(m.data)} (${esc(m.quem)}).</p><p>O saldo de ${esc(m.item)} vai de ${it?it.qtd:0} para ${(it?it.qtd:0)+efeito}. O lançamento continua no histórico, riscado, junto com o estorno.</p>`,
+    [{label:'Cancelar'},{label:'Estornar',cls:'btn-danger',fn:()=>{
+      if(it) it.qtd += efeito; m.estornado = true;
+      if(m.pac){ const p=S.pacientes.find(x=>x.id===m.pac); p.doacoes = p.doacoes.filter(d=>d.hid!==m.id); }
+      registrarMov({data:TODAY,mov:'Estorno',item:m.item,qtd:m.qtd,quem:`Estorno da ${m.mov.toLowerCase()} de ${br(m.data)}`,vol:'Ana Lúcia',ref:m.id});
+      renderHistorico(); toast('Movimentação estornada e saldo ajustado.');
+    }}]);
 }
 
 /* ===================== REGISTRAR DOAÇÃO ===================== */
 let doaRows = [];
-function newRow(){ return {tipo:'Cesta básica',desc:'',qtd:1,local:'Depósito'}; }
-function renderDoacao(keepBanner){
-  if(!keepBanner){ $('#doaBanner').innerHTML=''; }
+function newRow(){ return {sel:'',novoNome:'',novoCat:'',qtd:'',local:'',obs:''}; }
+function renderDoacao(){
   if(!doaRows.length) doaRows=[newRow()];
   if(!$('#doaData').value) $('#doaData').value = TODAY;
   drawDoaRows();
 }
+function toggleAnon(){ const a=$('#doaAnon').checked; $('#doaNome').disabled=a; if(a){ $('#doaNome').value=''; setErr('doaNome',''); } }
 function drawDoaRows(){
+  const one = doaRows.length===1;
   $('#doaItems').innerHTML = doaRows.map((r,i)=>`
     <div class="item-row">
-      <div><label class="f">Tipo</label><select class="inp" onchange="doaRows[${i}].tipo=this.value">${CATS.map(c=>`<option ${r.tipo===c?'selected':''}>${c}</option>`).join('')}</select></div>
-      <div><label class="f">Descrição</label><input class="inp" placeholder="Ex.: tamanho M, validade..." value="${esc(r.desc)}" oninput="doaRows[${i}].desc=this.value"></div>
-      <div><label class="f">Quantidade</label><input class="inp" type="number" min="1" value="${r.qtd}" oninput="doaRows[${i}].qtd=this.value"></div>
-      <div><label class="f">Onde guardar</label><select class="inp" onchange="doaRows[${i}].local=this.value">${LOCAIS.map(c=>`<option ${r.local===c?'selected':''}>${c}</option>`).join('')}</select></div>
-      <button class="icon-btn" title="Remover item" onclick="rmDoaItem(${i})">${ICON.trash}</button>
+      <div class="item-grid">
+        <div><label class="f" for="di-sel-${i}">Item <span class="req">*</span></label>
+          <select class="inp" id="di-sel-${i}" onchange="rowSel(${i},this.value)">
+            <option value="" ${r.sel===''?'selected':''}>Selecione o item</option>
+            ${CATS.map(c=>`<optgroup label="${c}">${S.estoque.filter(x=>x.tipo===c).map(x=>`<option value="${esc(x.nome)}" ${r.sel===x.nome?'selected':''}>${esc(x.nome)}</option>`).join('')}</optgroup>`).join('')}
+            <option value="__novo" ${r.sel==='__novo'?'selected':''}>+ Cadastrar novo item…</option>
+          </select><div class="ferr" id="di-sel-${i}-err"></div></div>
+        <div><label class="f" for="di-qtd-${i}">Quantidade <span class="req">*</span></label><input class="inp" type="number" min="1" step="1" id="di-qtd-${i}" value="${esc(r.qtd)}" oninput="rowQtd(${i},this.value)"><div class="ferr" id="di-qtd-${i}-err"></div></div>
+        <div><label class="f" for="di-loc-${i}">Onde guardar</label><select class="inp" id="di-loc-${i}" onchange="doaRows[${i}].local=this.value">${LOCAIS.map(c=>`<option ${r.local===c?'selected':''}>${c}</option>`).join('')}</select></div>
+        <div><label class="f" for="di-obs-${i}">Observação</label><input class="inp" id="di-obs-${i}" placeholder="Ex.: validade 12/2027" value="${esc(r.obs)}" oninput="doaRows[${i}].obs=this.value"></div>
+        <button class="icon-btn" aria-label="Remover item ${i+1}" title="${one?'Mantenha pelo menos um item na doação':'Remover item'}" ${one?'disabled':''} onclick="rmDoaItem(${i})">${ICON.trash}</button>
+      </div>
+      ${r.sel==='__novo'?`<div class="item-new">
+        <div><label class="f" for="di-nn-${i}">Nome do novo item <span class="req">*</span></label><input class="inp" id="di-nn-${i}" value="${esc(r.novoNome)}" placeholder="Ex.: Fralda geriátrica M (pacote)" oninput="doaRows[${i}].novoNome=this.value"><div class="ferr" id="di-nn-${i}-err"></div></div>
+        <div><label class="f" for="di-nc-${i}">Categoria <span class="req">*</span></label><select class="inp" id="di-nc-${i}" onchange="doaRows[${i}].novoCat=this.value"><option value="">Selecione</option>${CATS.map(c=>`<option ${r.novoCat===c?'selected':''}>${c}</option>`).join('')}</select><div class="ferr" id="di-nc-${i}-err"></div></div>
+      </div>`:''}
     </div>`).join('');
 }
-function addDoaItem(){ doaRows.push(newRow()); drawDoaRows(); }
-function rmDoaItem(i){ doaRows.splice(i,1); if(!doaRows.length) doaRows=[newRow()]; drawDoaRows(); }
-let seq = 1;
+function rowSel(i,v){ const r=doaRows[i]; r.sel=v; const it=item(v); if(it) r.local=it.local; drawDoaRows(); setErr(`di-sel-${i}`,''); }
+function rowQtd(i,v){ doaRows[i].qtd=v; const n=Number(v);
+  setErr(`di-qtd-${i}`, v!=='' && (!Number.isInteger(n) || n<1) ? 'A quantidade deve ser um número inteiro maior que 0.' : ''); }
+function addDoaItem(){ doaRows.push(newRow()); drawDoaRows(); $(`#di-sel-${doaRows.length-1}`).focus(); }
+function rmDoaItem(i){ if(doaRows.length===1) return; doaRows.splice(i,1); drawDoaRows(); }
 function salvarDoacao(){
-  const rows = doaRows.map(r=>({...r, qtd:parseInt(r.qtd)})).filter(r=>r.qtd>0);
-  if(!rows.length){ $('#doaBanner').innerHTML = `<div class="banner err">Informe uma quantidade válida para os itens doados.</div>`; return; }
-  const doador = $('#doaNome').value.trim() || 'Doador anônimo';
-  const data = $('#doaData').value || TODAY; const vol = $('#doaVol').value;
-  rows.forEach(r=>{
-    const desc = r.desc.trim();
-    let item = S.estoque.find(i=> desc ? i.nome.toLowerCase()===desc.toLowerCase() || i.nome.toLowerCase()===(r.tipo+' ('+desc+')').toLowerCase() : i.nome===r.tipo || (i.tipo===r.tipo && S.estoque.filter(x=>x.tipo===r.tipo).length===1));
-    if(!item){ item = {nome: desc ? (r.tipo==='Outros materiais'||r.tipo==='Medicamento' ? desc : `${r.tipo} (${desc})`) : r.tipo, tipo:r.tipo, local:r.local, qtd:0, min:5}; S.estoque.push(item); }
-    item.qtd += r.qtd;
-    S.hist.push({data, mov:'Entrada', item:item.nome, qtd:r.qtd, quem:doador, vol, novo:true, seq:seq++});
+  const errs=[]; const anon=$('#doaAnon').checked;
+  const nome=$('#doaNome').value.trim();
+  setErr('doaNome', (nome||anon)?'':'Informe quem doou ou marque "Doação anônima".'); if(!nome && !anon) errs.push('doaNome');
+  setErr('doaData', $('#doaData').value?'':'Informe a data de entrada.'); if(!$('#doaData').value) errs.push('doaData');
+  doaRows.forEach((r,i)=>{
+    if(!r.sel){ setErr(`di-sel-${i}`,'Selecione o item recebido.'); errs.push(`di-sel-${i}`); } else setErr(`di-sel-${i}`,'');
+    if(r.sel==='__novo'){
+      const nn=r.novoNome.trim();
+      const exists = S.estoque.find(x=>x.nome.toLowerCase()===nn.toLowerCase());
+      setErr(`di-nn-${i}`, !nn?'Digite o nome do novo item.': exists?`"${exists.nome}" já existe no estoque: selecione-o na lista.`:''); if(!nn||exists) errs.push(`di-nn-${i}`);
+      setErr(`di-nc-${i}`, r.novoCat?'':'Escolha a categoria.'); if(!r.novoCat) errs.push(`di-nc-${i}`);
+    }
+    const n=Number(r.qtd);
+    const bad = r.qtd==='' || !Number.isInteger(n) || n<1;
+    setErr(`di-qtd-${i}`, bad ? (r.qtd===''?'Informe a quantidade.':'A quantidade deve ser um número inteiro maior que 0.') : ''); if(bad) errs.push(`di-qtd-${i}`);
   });
-  doaRows=[newRow()]; $('#doaNome').value=''; $('#doaTel').value=''; $('#doaData').value=TODAY;
-  $('#doaBanner').innerHTML = `<div class="banner">${ICON.check}Doação registrada! O estoque foi atualizado automaticamente.</div>`;
-  renderDoacao(true); window.scrollTo(0,0);
+  summary('doaSummary', errs);
+  if(errs.length){ return; }
+  const btn=$('#doaSave'); btn.disabled=true; setTimeout(()=>btn.disabled=false,1200);   // evita clique duplo
+  const doador = anon ? 'Doação anônima' : nome, data=$('#doaData').value, vol=$('#doaVol').value;
+  const movs = doaRows.map(r=>{
+    let it;
+    if(r.sel==='__novo'){ it={nome:r.novoNome.trim(),tipo:r.novoCat,local:r.local||LOCAIS[0],qtd:0,min:5}; S.estoque.push(it); r._novo=it; }
+    else it=item(r.sel);
+    it.qtd += Number(r.qtd);
+    return registrarMov({data,mov:'Doação',item:it.nome,qtd:Number(r.qtd),quem:doador,vol});
+  });
+  const criados = doaRows.filter(r=>r._novo).map(r=>r._novo);
+  const resumo = movs.map(m=>`${m.qtd}× ${m.item}`).join(', ');
+  doaRows=[newRow()]; $('#doaNome').value=''; $('#doaTel').value=''; $('#doaAnon').checked=false; toggleAnon(); $('#doaData').value=TODAY;
+  drawDoaRows(); window.scrollTo(0,0);
+  toast(`Doação registrada: ${resumo}. Estoque atualizado.`, ()=>{ movs.forEach(desfazerMov); S.estoque = S.estoque.filter(x=>!criados.includes(x)); toast('Doação desfeita. O estoque voltou ao saldo anterior.'); });
 }
 
 /* ===================== ESTOQUE ===================== */
-let estFiltro='Todos';
+let estFiltro='Todas';
 function renderEstoque(){
-  $('#estChips').innerHTML = ['Todos',...CATS].map(c=>`<button class="chip ${c===estFiltro?'on':''}" onclick="estFiltro='${c}';renderEstoque()">${c}</button>`).join('');
+  $('#estChips').innerHTML = ['Todas',...CATS].map(c=>`<button class="chip ${c===estFiltro?'on':''}" aria-pressed="${c===estFiltro}" onclick="estFiltro='${c}';renderEstoque()">${c}</button>`).join('');
   const q = $('#estSearch').value.trim().toLowerCase();
-  const list = S.estoque.filter(i=>(estFiltro==='Todos'||i.tipo===estFiltro) && (!q||i.nome.toLowerCase().includes(q)));
-  $('#estBody').innerHTML = list.length ? list.map(i=>`<tr><td class="b">${esc(i.nome)}</td><td>${esc(i.tipo)}</td><td class="m">${esc(i.local)}</td><td><span class="qty">${i.qtd}</span></td><td><span class="badge ${i.qtd<i.min?'b-amber':'b-green'}">${i.qtd<i.min?'Baixo':'Ok'}</span></td></tr>`).join('') : '<tr><td colspan="5" class="empty">Nenhum item encontrado.</td></tr>';
+  const list = S.estoque.filter(i=>(estFiltro==='Todas'||i.tipo===estFiltro) && (!q||i.nome.toLowerCase().includes(q)));
+  $('#estBody').innerHTML = list.length ? list.map(i=>`<tr><td class="b">${esc(i.nome)}</td><td>${esc(i.tipo)}</td><td class="m">${esc(i.local)}</td><td class="n"><span class="qty">${i.qtd}</span></td><td><span class="badge ${i.qtd<i.min?'b-amber':'b-green'}">${i.qtd<i.min?'Baixo':'Ok'}</span></td></tr>`).join('') : '<tr><td colspan="5" class="empty">Nenhum item encontrado.</td></tr>';
 }
 $('#estSearch').addEventListener('input', renderEstoque);
 
-/* ===================== REGISTRAR SAÍDA ===================== */
-function renderSaida(keepBanner){
-  if(!keepBanner) $('#saiBanner').innerHTML='';
+/* ===================== REGISTRAR ENTREGA ===================== */
+function renderEntrega(){
   const pSel = $('#saiPac').value, iSel = $('#saiItem').value;
-  $('#saiPac').innerHTML = S.pacientes.filter(p=>p.status!=='Óbito').map(p=>`<option value="${p.id}">${esc(p.nome)}</option>`).join('');
-  $('#saiItem').innerHTML = S.estoque.map((i,k)=>`<option value="${k}">${esc(i.nome)}</option>`).join('');
-  if(pSel) $('#saiPac').value = pSel; if(iSel) $('#saiItem').value = iSel;
+  $('#saiPac').innerHTML = '<option value="">Selecione quem recebeu</option>' + S.pacientes.filter(p=>p.status!=='Óbito').map(p=>`<option value="${p.id}">${esc(p.nome)}</option>`).join('');
+  $('#saiItem').innerHTML = '<option value="">Selecione o item</option>' + S.estoque.map((i,k)=>`<option value="${k}">${esc(i.nome)}</option>`).join('');
+  $('#saiPac').value = pSel || ''; $('#saiItem').value = iSel || '';
   if(!$('#saiData').value) $('#saiData').value = TODAY;
   updDisp();
 }
-function updDisp(){ const it = S.estoque[$('#saiItem').value]; $('#saiDisp').textContent = it ? it.qtd : 0; $('#saiErr').style.display='none'; }
-$('#saiItem').addEventListener('change', updDisp); $('#saiQtd').addEventListener('input', ()=>$('#saiErr').style.display='none');
-function confirmarSaida(){
-  const it = S.estoque[$('#saiItem').value]; const q = parseInt($('#saiQtd').value);
-  const err = m => { $('#saiErr').textContent = m; $('#saiErr').style.display='block'; };
-  if(!q || q<1) return err('Informe uma quantidade válida.');
-  if(q > it.qtd) return err(`Quantidade maior que o disponível (${it.qtd}).`);
-  const p = S.pacientes.find(x=>x.id==$('#saiPac').value); const data = $('#saiData').value || TODAY;
+function updDisp(){ const it = S.estoque[$('#saiItem').value]; $('#saiDisp').textContent = it ? it.qtd : '—'; }
+$('#saiItem').addEventListener('change', ()=>{ updDisp(); setErr('saiItem',''); });
+$('#saiPac').addEventListener('change', ()=>setErr('saiPac',''));
+$('#saiQtd').addEventListener('input', ()=>{ const v=$('#saiQtd').value, n=Number(v); setErr('saiQtd', v!=='' && (!Number.isInteger(n)||n<1) ? 'A quantidade deve ser um número inteiro maior que 0.' : ''); });
+function confirmarEntrega(){
+  const errs=[]; const it = S.estoque[$('#saiItem').value]; const v=$('#saiQtd').value, q=Number(v);
+  const p = S.pacientes.find(x=>x.id==$('#saiPac').value);
+  setErr('saiPac', p?'':'Selecione quem recebeu a entrega.'); if(!p) errs.push('saiPac');
+  setErr('saiItem', it?'':'Selecione o item entregue.'); if(!it) errs.push('saiItem');
+  let qe=''; if(v===''||!Number.isInteger(q)||q<1) qe='A quantidade deve ser um número inteiro maior que 0.'; else if(it && q>it.qtd) qe=`Há só ${it.qtd} disponível(is) deste item.`;
+  setErr('saiQtd', qe); if(qe) errs.push('saiQtd');
+  setErr('saiData', $('#saiData').value?'':'Informe a data da entrega.'); if(!$('#saiData').value) errs.push('saiData');
+  summary('saiSummary', errs); if(errs.length) return;
+  const btn=$('#saiSave'); btn.disabled=true; setTimeout(()=>btn.disabled=false,1200);   // evita clique duplo
+  const data = $('#saiData').value;
   it.qtd -= q;
-  S.hist.push({data, mov:'Saída', item:it.nome, qtd:q, quem:p.curto, vol:'Ana Lúcia', novo:true, seq:seq++});
-  p.doacoes.push({data, item:it.nome, qtd:q});
-  $('#saiQtd').value = 1; $('#saiObs').value='';
-  $('#saiBanner').innerHTML = `<div class="banner">${ICON.check}Entrega registrada no histórico da família.</div>`;
-  renderSaida(true);
+  const m = registrarMov({data, mov:'Entrega', item:it.nome, qtd:q, quem:p.curto, vol:'Ana Lúcia', pac:p.id});
+  p.doacoes.push({data, item:it.nome, qtd:q, hid:m.id});
+  $('#saiQtd').value = 1; $('#saiObs').value=''; $('#saiPac').value=''; $('#saiItem').value='';
+  renderEntrega();
+  toast(`Entrega registrada: ${q}× ${it.nome} para ${p.curto}.`, ()=>{ desfazerMov(m); if(current==='entrega') renderEntrega(); toast('Entrega desfeita. O estoque voltou ao saldo anterior.'); });
 }
 
 /* ===================== HISTÓRICO ===================== */
 function renderHistorico(){
   const t = $('#hiTipo').value, de = $('#hiDe').value, ate = $('#hiAte').value;
+  if(de && ate && de > ate){ setErr('hiAte','A data final deve ser igual ou posterior à data inicial.'); $('#hiBody').innerHTML='<tr><td colspan="7" class="empty">Ajuste o período para ver as movimentações.</td></tr>'; return; }
+  setErr('hiAte','');
   const list = sortedHist().filter(h=>(!t||h.mov===t) && (!de||h.data>=de) && (!ate||h.data<=ate));
-  $('#hiBody').innerHTML = list.length ? list.map(h=>`<tr><td class="m">${br(h.data)}</td><td>${movBadge(h.mov)}</td><td class="b">${esc(h.item)}</td><td>${h.qtd}</td><td>${esc(h.quem)}</td><td class="m">${esc(h.vol)}</td></tr>`).join('') : '<tr><td colspan="6" class="empty">Nenhuma movimentação no período.</td></tr>';
+  $('#hiBody').innerHTML = list.length ? list.map(h=>`<tr class="${h.estornado?'voided':''}"><td class="m">${br(h.data)}</td><td>${movBadge(h.mov)}</td><td class="b">${esc(h.item)}</td><td class="n">${h.qtd}</td><td>${esc(h.quem)}</td><td class="m">${esc(h.vol)}</td>
+    <td>${h.mov==='Estorno'?'':h.estornado?'<span class="badge b-grey">Estornada</span>':`<button class="act" onclick="estornar(${h.id})" aria-label="Estornar ${h.mov.toLowerCase()} de ${h.qtd} ${esc(h.item)}">Estornar</button>`}</td></tr>`).join('') : '<tr><td colspan="7" class="empty">Nenhuma movimentação no período.</td></tr>';
 }
 ['#hiTipo','#hiDe','#hiAte'].forEach(s=>$(s).addEventListener('change', renderHistorico));
 
@@ -747,20 +987,21 @@ function renderRelatorios(){
   const tri = de==='2026-07-01' && ate==='2026-09-30' ? 'Prévia – 3º trimestre 2026' : 'Prévia do período';
   const k = (bg,col,lbl,val)=>`<div class="kpi" style="background:${bg}"><small style="color:${col}">${lbl}</small><b>${val}</b></div>`;
   $('#rePrev').innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px"><h3 class="serif" style="font-size:19px;font-weight:600;margin:0">${tri}</h3><small style="color:var(--muted)">${de?brShort(de):'—'} a ${ate?brShort(ate):'—'}</small></div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;gap:10px;flex-wrap:wrap"><h2 class="serif" style="font-size:19px;font-weight:600;margin:0">${tri}</h2><small style="color:var(--muted)">${de?brShort(de):'—'} a ${ate?brShort(ate):'—'}</small></div>
     <div class="kpis">
-      ${tipo!=='s'?k('var(--rose-soft)','var(--rose)','Itens recebidos',rec):''}
+      ${tipo!=='s'?k('var(--rose-soft)','var(--rose-text)','Itens doados',rec):''}
       ${tipo!=='e'?k('var(--green-soft)','var(--green-text)','Itens entregues',ent):''}
       ${k('var(--rose-softer)','var(--ink-2)','Famílias atendidas',fam)}
     </div>
-    ${rows.map(r=>{ const txt = tipo==='e'?`${r.rec} recebidos`: tipo==='s'?`${r.ent} entregues`:`${r.rec} recebidos · ${r.ent} entregues`;
+    ${rows.map(r=>{ const txt = tipo==='e'?`${r.rec} doados`: tipo==='s'?`${r.ent} entregues`:`${r.rec} doados · ${r.ent} entregues`;
       const pct = tipo==='e' ? 100 : Math.round(r.ent/r.rec*100);
-      return `<div class="bar-row"><div class="lbl"><span>${r.cat}</span><span style="color:var(--muted)">${txt}</span></div><div class="bar"><i style="width:${pct}%"></i></div></div>`;}).join('')}`;
+      return `<div class="bar-row"><div class="lbl"><span>${r.cat}</span><span style="color:var(--muted)">${txt}</span></div><div class="bar" role="img" aria-label="${r.cat}: ${txt}"><i style="width:${pct}%"></i></div></div>`;}).join('')}`;
   $('#rePrev').querySelector('.kpis').style.gridTemplateColumns = `repeat(${$('#rePrev').querySelectorAll('.kpi').length},1fr)`;
 }
 ['#reTipo','#reCat','#reDe','#reAte'].forEach(s=>$(s).addEventListener('change', renderRelatorios));
 
-/* ===================== ROTA INICIAL (hash) ===================== */
+/* ===================== ROTA INICIAL ===================== */
+linkLabels();
 (function(){
   const h = location.hash.slice(1);
   if(h && h!=='login'){
