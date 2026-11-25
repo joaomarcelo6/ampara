@@ -30,10 +30,10 @@
   .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
   /* ---------- LOGIN ---------- */
-  #login{position:fixed;inset:0;overflow:auto;display:flex;align-items:center;justify-content:space-between;gap:40px;padding:40px 21% 40px 5%;
+  #login{position:fixed;inset:0;overflow:auto;display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:64px;padding:40px 9%;
     background:radial-gradient(ellipse at 100% 100%, #dff2e3 0%, rgba(223,242,227,0) 45%),
                linear-gradient(135deg,#f9d9e6 0%,#fcebf2 40%,#fdf4f7 70%,#f3f8f1 100%)}
-  #login .hero{max-width:380px}
+  #login .hero{max-width:520px}
   #login .logo{width:52px;height:52px;border-radius:50%;background:var(--rose);display:grid;place-items:center;margin-bottom:26px}
   #login .logo svg{width:24px;height:24px;fill:#fff;stroke:none}
   #login h1{font-family:'Lora',serif;font-weight:600;font-size:40px;line-height:1.2;margin:0 0 22px}
@@ -758,7 +758,7 @@ function cadastroForm(p, prefix){
   <div class="grid2" style="margin-bottom:20px">
     <div class="card sec"><div class="sec-h"><span class="num">2</span><h2>Perfil clínico</h2></div>
       ${selOutro(prefix,'cancer','Tipo de câncer',CANCERS,p&&p.cancer)}
-      ${selOutro(prefix,'hosp','Hospital do tratamento',HOSPS,p&&p.hosp)}
+      <div class="fg"><label class="f" for="${prefix}hosp">Hospital do tratamento</label><input class="inp" id="${prefix}hosp" value="${v('hosp')}"></div>
       <div class="fg"><div class="crm-row">
         <div><label class="f" for="${prefix}crm">CRM do(a) médico(a)</label><input class="inp" id="${prefix}crm" inputmode="numeric" value="${v('crm')}" placeholder="Somente números" oninput="crmLookup('${prefix}')"></div>
         <div><label class="f" for="${prefix}uf">UF</label><select class="inp" id="${prefix}uf" onchange="crmLookup('${prefix}')">${['SP','MG','RJ','PR','PE','BA','RS','SC','GO','DF'].map(u=>`<option ${(p&&p.uf||'SP')===u?'selected':''}>${u}</option>`).join('')}</select></div>
@@ -798,7 +798,7 @@ function crmLookup(prefix, explicit){
 function lerForm(prefix){
   const g = id => $('#'+prefix+id);
   return {nome:g('nome').value.trim(), doc:g('doc').value.trim(), nasc:g('nasc').value, tel:g('tel').value.trim(), status:g('status').value||'Ativo',
-    end:g('end').value.trim(), cancer:readOutro(prefix,'cancer'), hosp:readOutro(prefix,'hosp'), crm:g('crm').value.replace(/\D/g,''), uf:g('uf').value, medico:(MEDICOS[g('crm').value.replace(/\D/g,'')]||g('medico').value.trim()),
+    end:g('end').value.trim(), cancer:readOutro(prefix,'cancer'), hosp:g('hosp').value.trim(), crm:g('crm').value.replace(/\D/g,''), uf:g('uf').value, medico:(MEDICOS[g('crm').value.replace(/\D/g,'')]||g('medico').value.trim()),
     casa:Math.max(1, parseInt(g('casa').value)||1), criancas:g('criancas').getAttribute('aria-pressed')==='true', idosos:g('idosos').getAttribute('aria-pressed')==='true',
     needs:[...document.querySelectorAll('#'+prefix+'needs .need-chip[aria-pressed="true"]')].map(b=>b.textContent), obs:g('obs').value.trim()};
 }
