@@ -65,6 +65,27 @@
   .logout{margin-left:auto;background:none;border:1px solid transparent;color:var(--ink-2);padding:6px 8px;border-radius:8px;display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700}
   .logout:hover{background:var(--rose-softer);border-color:var(--line)}
   .mobilebar{display:none}
+  .skip{position:absolute;left:-9999px;top:10px;z-index:100;background:#fff;color:var(--rose-text);padding:10px 16px;border-radius:10px;font-weight:800;box-shadow:0 4px 16px rgba(0,0,0,.15);text-decoration:underline}
+  .skip:focus{left:12px}
+  .collapse-btn{display:flex;align-items:center;gap:10px;width:100%;background:none;border:1px dashed var(--field);border-radius:10px;padding:8px 12px;color:var(--ink-2);font-size:13px;font-weight:700;margin:0 0 6px}
+  .collapse-btn:hover{background:#f8dce7}
+  .collapse-btn svg{transition:transform .2s}
+  body.collapsed aside{width:78px;padding:20px 10px}
+  body.collapsed #app{background:linear-gradient(to right,var(--side) 78px,var(--bg) 78px)}
+  body.collapsed .lbl,body.collapsed .nav-sec,body.collapsed .brand-txt,body.collapsed .user-txt{display:none}
+  body.collapsed .nav a,body.collapsed .collapse-btn{justify-content:center;padding:11px 0}
+  body.collapsed .collapse-btn svg{transform:rotate(180deg)}
+  body.collapsed .brand{justify-content:center;padding:4px 0 20px}
+  body.collapsed .user{flex-direction:column;padding:10px 6px}
+  body.collapsed .logout{margin-left:0}
+  .note-acts{margin-left:auto;display:flex;gap:6px}
+  .note-acts button{background:none;border:1px solid var(--line);border-radius:8px;padding:4px 10px;font-size:12.5px;font-weight:700;color:var(--ink-2)}
+  .note-acts button:hover{background:var(--rose-softer);border-color:var(--field)}
+  .note-acts button.del:hover{background:var(--err-soft);color:var(--err);border-color:var(--err)}
+  .crm-row{display:grid;grid-template-columns:1fr 90px auto;gap:10px;align-items:end}
+  .crm-ok{display:flex;gap:8px;align-items:center;background:var(--green-soft);color:var(--green-text);border-radius:10px;padding:10px 12px;font-weight:700;font-size:13.5px;margin-top:10px}
+  .crm-no{background:var(--amber-soft);color:var(--amber-text);border-radius:10px;padding:10px 12px;font-weight:700;font-size:13px;margin-top:10px}
+  .obs{display:block;font-weight:600;font-size:12.5px;color:var(--muted);margin-top:4px}
   .scrim{display:none}
 
   main{flex:1;min-width:0;display:flex;flex-direction:column}
@@ -254,11 +275,16 @@
   .modal .actions{margin-top:18px}
 
   /* ---------- RESPONSIVO ---------- */
-  @media (max-width: 900px){
+  @media (max-width: 1024px){
     #app{background:var(--bg)}
     aside{position:fixed;left:0;top:0;bottom:0;z-index:50;transform:translateX(-105%);transition:transform .2s;box-shadow:4px 0 20px rgba(0,0,0,.15)}
     aside.open{transform:none}
     .scrim.on{display:block;position:fixed;inset:0;background:rgba(47,35,40,.35);z-index:45}
+    .collapse-btn{display:none}
+    body.collapsed aside{width:240px;padding:20px 14px}
+    body.collapsed .lbl,body.collapsed .nav-sec,body.collapsed .brand-txt,body.collapsed .user-txt{display:revert}
+    body.collapsed .nav a{justify-content:flex-start;padding:10px 12px}
+    .crm-row{grid-template-columns:1fr 1fr}
     .mobilebar{display:flex;align-items:center;gap:12px;background:#fff;border-bottom:1px solid var(--line);padding:10px 16px;position:sticky;top:0;z-index:30}
     .mobilebar b{font-family:'Lora',serif;font-size:17px}
     .menu-btn{display:flex;align-items:center;gap:8px;border:1px solid var(--field);background:#fff;border-radius:10px;padding:8px 12px;font-weight:800}
@@ -305,12 +331,14 @@
 
 <!-- ===================== APP ===================== -->
 <div id="app">
+  <a class="skip" href="#conteudo" onclick="event.preventDefault();skipToContent()">Pular para o conteúdo</a>
   <div class="scrim" id="scrim" onclick="toggleMenu(false)"></div>
   <aside id="sidebar" aria-label="Menu principal">
     <div class="brand">
       <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></div>
-      <div><b>Ampara</b><small>Apoio a pacientes</small></div>
+      <div class="brand-txt"><b>Ampara</b><small>Apoio a pacientes</small></div>
     </div>
+    <button class="collapse-btn" id="collapseBtn" aria-expanded="true" aria-controls="sidebar" onclick="toggleCollapse()"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m11 17-5-5 5-5M18 17l-5-5 5-5"/></svg><span class="lbl">Recolher menu</span></button>
     <nav class="nav">
       <a href="#inicio" data-go="inicio"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Início</a>
       <div class="nav-sec" aria-hidden="true">Doações e estoque</div>
@@ -325,12 +353,12 @@
     </nav>
     <div class="user">
       <div class="avatar" aria-hidden="true">AL</div>
-      <div><b>Ana Lúcia</b><small>Voluntária</small></div>
+      <div class="user-txt"><b>Ana Lúcia</b><small>Voluntária</small></div>
       <button class="logout" onclick="logout()" aria-label="Sair do sistema"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></svg>Sair</button>
     </div>
   </aside>
 
-  <main>
+  <main id="conteudo" tabindex="-1">
     <div class="mobilebar"><button class="menu-btn" onclick="toggleMenu(true)" aria-label="Abrir menu"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>Menu</button><b>Ampara</b></div>
 
     <!-- INÍCIO -->
@@ -381,7 +409,7 @@
     <!-- DETALHES -->
     <section class="page" id="p-detalhes">
       <div class="ph"><div><h1 id="dtName"></h1><p id="dtSub"></p></div>
-        <div class="status-wrap"><label for="dtStatus">Status:</label> <select class="inp" id="dtStatus"></select></div></div>
+        <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><button class="btn btn-green btn-sm" onclick="go('entrega',{pac:curPac})"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>Registrar entrega</button><div class="status-wrap"><label for="dtStatus">Status:</label> <select class="inp" id="dtStatus"></select></div></div></div>
       <div class="content">
         <div class="det">
           <div id="dtSide"></div>
@@ -452,7 +480,7 @@
             </div>
           </div>
         </div>
-        <div class="card sec" style="padding-bottom:20px"><label class="f" for="saiObs">Observação (opcional)</label><textarea class="inp" id="saiObs"></textarea></div>
+        <div class="card sec" style="padding-bottom:20px"><label class="f" for="saiObs">Observação (opcional)</label><textarea class="inp" id="saiObs" placeholder="Ex.: cesta entregue sem arroz; completar na próxima visita"></textarea><div class="hint">A observação aparece no Histórico e na ficha do paciente.</div></div>
         <div class="actions"><button class="btn btn-ghost" data-go="inicio">Cancelar</button><button class="btn btn-green" id="saiSave" onclick="confirmarEntrega()">Confirmar entrega</button></div>
       </div>
     </section>
@@ -511,6 +539,9 @@ const CATS = ['Cesta básica','Cabelo','Prótese de sutiã','Medicamento','Outro
 const LOCAIS = ['Depósito','Sala 1 – Prateleira A','Sala 1 – Prateleira B','Armário de medicamentos'];
 const NEEDS = ['Cesta básica','Fraldas geriátricas','Suplementos alimentares','Transporte','Apoio psicológico'];
 const STATUS = ['Ativo','Alta/Remissão','Transferido','Óbito'];
+const CANCERS = ['Mama','Colo do útero','Ovário','Endométrio','Próstata','Pulmão','Colorretal','Estômago','Pele','Tireoide','Leucemia','Linfoma','Outro'];
+const HOSPS = ['Hospital do Câncer','Hospital Universitário','IMIP','Santa Casa','Hospital de Amor','Outro'];
+const MEDICOS = {'123456':'Dra. Helena Costa','234567':'Dr. Paulo Mendes','345678':'Dr. Marcos Lima','456789':'Dra. Ana Beatriz Souza','567890':'Dr. Ricardo Almeida'};
 
 const S = {
   estoque:[
@@ -525,7 +556,7 @@ const S = {
   hist:[
     {id:1,data:'2026-10-02',mov:'Doação',item:'Cesta básica',qtd:15,quem:'Supermercado Bom Preço',vol:'Ana Lúcia'},
     {id:2,data:'2026-10-01',mov:'Entrega',item:'Prótese de sutiã (M)',qtd:1,quem:'Maria das Graças Silva',vol:'Teresa',pac:1},
-    {id:3,data:'2026-09-30',mov:'Entrega',item:'Cesta básica',qtd:2,quem:'Família Oliveira',vol:'Ana Lúcia',pac:3},
+    {id:3,data:'2026-09-30',mov:'Entrega',item:'Cesta básica',qtd:2,quem:'Família Oliveira',vol:'Ana Lúcia',pac:3,obs:'Uma das cestas veio sem arroz; completada com doação avulsa.'},
     {id:4,data:'2026-09-28',mov:'Doação',item:'Mecha de cabelo natural',qtd:6,quem:'Salão Bela Flor',vol:'Rosângela'},
     {id:5,data:'2026-09-26',mov:'Doação',item:'Ondansetrona 8mg (caixa)',qtd:4,quem:'Farmácia Popular',vol:'Teresa'},
     {id:6,data:'2026-09-25',mov:'Entrega',item:'Ondansetrona 8mg (caixa)',qtd:2,quem:'Joana Ferreira',vol:'Teresa',pac:2}
@@ -533,22 +564,22 @@ const S = {
   base:{doa:28,ent:19},
   pacientes:[
     {id:1,nome:'Maria das Graças Silva',curto:'Maria das Graças Silva',cancer:'Mama',hosp:'Hospital do Câncer',status:'Ativo',casa:4,criancas:true,idosos:false,
-     needs:['Cesta básica','Apoio psicológico'],tel:'(81) 99876-5432',end:'Rua das Flores, 120 - Boa Vista',medico:'Dra. Helena Costa',doc:'123.456.789-00',nasc:'1968-04-12',obs:'',
+     needs:['Cesta básica','Apoio psicológico'],tel:'(81) 99876-5432',end:'Rua das Flores, 120 - Boa Vista',medico:'Dra. Helena Costa',crm:'123456',uf:'SP',doc:'123.456.789-00',nasc:'1968-04-12',obs:'',
      notas:[{tipo:'Visita',data:'2026-10-01',por:'Teresa',txt:'Visita domiciliar. Entregue prótese de sutiã. Paciente animada com o tratamento.'},
             {tipo:'Telefonema',data:'2026-09-20',por:'Ana Lúcia',txt:'Confirmou consulta dia 05/10. Precisa de transporte.'},
             {tipo:'Evolução social',data:'2026-09-05',por:'Rosângela',txt:'Filha conseguiu emprego, renda familiar melhorou.'}],
      doacoes:[{data:'2026-10-01',item:'Prótese de sutiã (M)',qtd:1,hid:2},{data:'2026-09-15',item:'Cesta básica',qtd:1},{data:'2026-08-15',item:'Cesta básica',qtd:1},{data:'2026-08-02',item:'Mecha de cabelo natural',qtd:1}]},
     {id:2,nome:'Joana Ferreira',curto:'Joana Ferreira',cancer:'Ovário',hosp:'IMIP',status:'Ativo',casa:3,criancas:false,idosos:true,
-     needs:['Transporte','Suplementos alimentares'],tel:'(81) 98765-1122',end:'Av. Norte, 455 - Casa Amarela',medico:'Dr. Paulo Mendes',doc:'234.567.890-11',nasc:'1975-09-03',obs:'',
+     needs:['Transporte','Suplementos alimentares'],tel:'(81) 98765-1122',end:'Av. Norte, 455 - Casa Amarela',medico:'Dr. Paulo Mendes',crm:'234567',uf:'SP',doc:'234.567.890-11',nasc:'1975-09-03',obs:'',
      notas:[{tipo:'Telefonema',data:'2026-09-24',por:'Teresa',txt:'Relatou enjoo forte após a quimioterapia. Separada ondansetrona.'},
             {tipo:'Visita',data:'2026-09-10',por:'Ana Lúcia',txt:'Primeira visita. Mora com a mãe e o marido.'}],
      doacoes:[{data:'2026-09-25',item:'Ondansetrona 8mg (caixa)',qtd:2,hid:6}]},
     {id:3,nome:'Família Oliveira (Sr. José)',curto:'Família Oliveira',cancer:'Próstata',hosp:'Hospital Universitário',status:'Ativo',casa:5,criancas:true,idosos:true,
-     needs:['Cesta básica','Fraldas geriátricas'],tel:'(81) 99123-4567',end:'Rua do Sol, 78 - Afogados',medico:'Dr. Marcos Lima',doc:'345.678.901-22',nasc:'1952-01-20',obs:'',
+     needs:['Cesta básica','Fraldas geriátricas'],tel:'(81) 99123-4567',end:'Rua do Sol, 78 - Afogados',medico:'Dr. Marcos Lima',crm:'345678',uf:'SP',doc:'345.678.901-22',nasc:'1952-01-20',obs:'',
      notas:[{tipo:'Visita',data:'2026-09-30',por:'Ana Lúcia',txt:'Entregues 2 cestas básicas. Neto ajuda nos cuidados.'}],
-     doacoes:[{data:'2026-09-30',item:'Cesta básica',qtd:2,hid:3}]},
+     doacoes:[{data:'2026-09-30',item:'Cesta básica',qtd:2,hid:3,obs:'Uma das cestas veio sem arroz; completada com doação avulsa.'}]},
     {id:4,nome:'Cláudia Ramos',curto:'Cláudia Ramos',cancer:'Mama',hosp:'Hospital do Câncer',status:'Alta/Remissão',casa:2,criancas:false,idosos:false,
-     needs:[],tel:'(81) 98888-7766',end:'Rua Real, 32 - Torre',medico:'Dra. Helena Costa',doc:'456.789.012-33',nasc:'1981-06-15',obs:'',
+     needs:[],tel:'(81) 98888-7766',end:'Rua Real, 32 - Torre',medico:'Dra. Helena Costa',crm:'123456',uf:'SP',doc:'456.789.012-33',nasc:'1981-06-15',obs:'',
      notas:[{tipo:'Evolução social',data:'2026-08-20',por:'Rosângela',txt:'Recebeu alta. Segue em acompanhamento trimestral.'}],
      doacoes:[{data:'2026-05-10',item:'Mecha de cabelo natural',qtd:1}]}
   ],
@@ -580,15 +611,40 @@ function toast(msg, undoFn){
 function hideToast(){ $('#toast').classList.remove('on'); }
 
 /* Modal de confirmação */
-function modal(title, bodyHtml, buttons){
+let modalReturn=null, modalCancel=null;
+function modal(title, bodyHtml, buttons, opts={}){
+  modalReturn = document.activeElement; modalCancel = opts.onCancel || null;
   $('#modalTitle').textContent = title; $('#modalBody').innerHTML = bodyHtml;
   $('#modalActions').innerHTML = '';
   buttons.forEach(b=>{ const el=document.createElement('button'); el.className='btn '+(b.cls||'btn-ghost'); el.textContent=b.label;
-    el.onclick=()=>{ if(b.keep!==true) closeModal(); b.fn && b.fn(); }; $('#modalActions').appendChild(el); });
+    el.onclick=()=>{ if(b.cancel){ cancelModal(); return; } if(b.keep!==true) closeModal(); b.fn && b.fn(); }; $('#modalActions').appendChild(el); });
   $('#modalBg').classList.add('on'); setTimeout(()=>$('#modalActions').lastChild.focus(),30);
 }
-function closeModal(){ $('#modalBg').classList.remove('on'); }
-document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeModal(); toggleMenu(false); } });
+function closeModal(){ $('#modalBg').classList.remove('on'); modalCancel=null; if(modalReturn && document.contains(modalReturn)) modalReturn.focus(); }
+function cancelModal(){ const c=modalCancel; closeModal(); c && c(); }
+document.addEventListener('keydown', e=>{
+  const open = $('#modalBg').classList.contains('on');
+  if(e.key==='Escape'){ if(open) cancelModal(); toggleMenu(false); }
+  if(e.key==='Tab' && open){   // retém o foco dentro da janela
+    const f=[...$('#modalBg .modal').querySelectorAll('button,input,select,textarea,[href],[tabindex]:not([tabindex="-1"])')].filter(el=>!el.disabled && el.offsetParent!==null);
+    if(!f.length) return;
+    const first=f[0], last=f[f.length-1];
+    if(e.shiftKey && (document.activeElement===first || !$('#modalBg .modal').contains(document.activeElement))){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey && (document.activeElement===last || !$('#modalBg .modal').contains(document.activeElement))){ e.preventDefault(); first.focus(); }
+  }
+});
+$('#modalBg').addEventListener('click', e=>{ if(e.target.id==='modalBg') cancelModal(); });
+function skipToContent(){ const h=document.querySelector('.page.on h1'); if(h){ h.setAttribute('tabindex','-1'); h.focus(); } }
+function toggleCollapse(){
+  const c = document.body.classList.toggle('collapsed');
+  $('#collapseBtn').setAttribute('aria-expanded', String(!c));
+  $('#collapseBtn .lbl').textContent = c ? 'Expandir menu' : 'Recolher menu';
+  $('#collapseBtn').setAttribute('aria-label', c ? 'Expandir menu' : 'Recolher menu');
+  try{ localStorage.setItem('ampara-menu', c?'1':'0'); }catch(e){}
+}
+document.querySelectorAll('.nav a').forEach(a=>{ const t=a.textContent.trim(); a.title=t;
+  [...a.childNodes].forEach(n=>{ if(n.nodeType===3 && n.textContent.trim()){ const s=document.createElement('span'); s.className='lbl'; s.textContent=n.textContent; a.replaceChild(s,n); } }); });
+try{ if(localStorage.getItem('ampara-menu')==='1') toggleCollapse(); }catch(e){}
 
 /* Erros: sempre junto ao campo + resumo no topo quando houver mais de um */
 function setErr(id, msg){
@@ -620,7 +676,7 @@ function go(page, opts={}){
   const navKey = NAV_OF[page] || page;
   document.querySelectorAll('.nav a').forEach(a => { const on = a.dataset.go === navKey; a.classList.toggle('active', on); on ? a.setAttribute('aria-current','page') : a.removeAttribute('aria-current'); });
   current = page; toggleMenu(false);
-  const R = {inicio:renderInicio, pacientes:renderPacientes, cadastro:renderNovo, detalhes:()=>renderDetalhes(opts.tab), doacao:renderDoacao, estoque:renderEstoque, entrega:renderEntrega, historico:renderHistorico, relatorios:renderRelatorios};
+  const R = {inicio:renderInicio, pacientes:renderPacientes, cadastro:renderNovo, detalhes:()=>renderDetalhes(opts.tab), doacao:renderDoacao, estoque:renderEstoque, entrega:()=>renderEntrega(opts.pac), historico:renderHistorico, relatorios:renderRelatorios};
   R[page] && R[page]();
   linkLabels();
   const h = page === 'detalhes' ? 'detalhes-' + curPac : page;
@@ -701,9 +757,16 @@ function cadastroForm(p, prefix){
   </div>
   <div class="grid2" style="margin-bottom:20px">
     <div class="card sec"><div class="sec-h"><span class="num">2</span><h2>Perfil clínico</h2></div>
-      <div class="fg"><label class="f">Tipo de câncer</label><input class="inp" id="${prefix}cancer" value="${v('cancer')}"></div>
-      <div class="fg"><label class="f">Hospital do tratamento</label><input class="inp" id="${prefix}hosp" value="${v('hosp')}"></div>
-      <div class="fg"><label class="f">Médico(a) responsável</label><input class="inp" id="${prefix}medico" value="${v('medico')}"></div>
+      ${selOutro(prefix,'cancer','Tipo de câncer',CANCERS,p&&p.cancer)}
+      ${selOutro(prefix,'hosp','Hospital do tratamento',HOSPS,p&&p.hosp)}
+      <div class="fg"><div class="crm-row">
+        <div><label class="f" for="${prefix}crm">CRM do(a) médico(a)</label><input class="inp" id="${prefix}crm" inputmode="numeric" value="${v('crm')}" placeholder="Somente números" oninput="crmLookup('${prefix}')"></div>
+        <div><label class="f" for="${prefix}uf">UF</label><select class="inp" id="${prefix}uf" onchange="crmLookup('${prefix}')">${['SP','MG','RJ','PR','PE','BA','RS','SC','GO','DF'].map(u=>`<option ${(p&&p.uf||'SP')===u?'selected':''}>${u}</option>`).join('')}</select></div>
+        <button type="button" class="btn btn-ghost btn-sm" style="height:44px" onclick="crmLookup('${prefix}',true)">Buscar</button>
+      </div>
+      <div id="${prefix}crmRes" aria-live="polite">${p&&p.crm&&MEDICOS[p.crm]?crmOk(MEDICOS[p.crm],p.uf,p.crm):''}</div>
+      <div id="${prefix}medWrap" style="${p&&p.crm&&MEDICOS[p.crm]?'display:none':''};margin-top:12px"><label class="f" for="${prefix}medico">Nome do(a) médico(a)</label><input class="inp" id="${prefix}medico" value="${v('medico')}"></div>
+      <div class="hint">Digite o CRM para buscar o nome na base de médicos (simulação da consulta ao CRM).</div></div>
     </div>
     <div class="card sec"><div class="sec-h"><span class="num">3</span><h2>Composição familiar</h2></div>
       <div class="fg"><label class="f">Quantas pessoas moram na casa?</label><input class="inp" type="number" min="1" id="${prefix}casa" value="${p?p.casa:1}"></div>
@@ -716,10 +779,26 @@ function cadastroForm(p, prefix){
     <div class="fg" style="margin-top:6px"><label class="f">Observações</label><textarea class="inp" id="${prefix}obs">${v('obs')}</textarea></div>
   </div>`;
 }
+function selOutro(prefix,key,label,list,val){
+  const known = !val || list.includes(val), sel = !val ? '' : known ? val : 'Outro';
+  return `<div class="fg"><label class="f" for="${prefix}${key}">${label}</label>
+    <select class="inp" id="${prefix}${key}" onchange="document.getElementById('${prefix}${key}OutroW').style.display=this.value==='Outro'?'':'none'">
+      <option value="">Selecione</option>${list.map(o=>`<option ${sel===o?'selected':''}>${o}</option>`).join('')}</select>
+    <div id="${prefix}${key}OutroW" style="${sel==='Outro'?'':'display:none'};margin-top:10px"><label class="f" for="${prefix}${key}Outro">Qual?</label><input class="inp" id="${prefix}${key}Outro" value="${!known?esc(val):''}"></div></div>`;
+}
+function readOutro(prefix,key){ const s=$('#'+prefix+key).value; return s==='Outro' ? $('#'+prefix+key+'Outro').value.trim() : s; }
+const crmOk = (nome,uf,crm)=>`<div class="crm-ok"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>${esc(nome)} · CRM-${esc(uf)} ${esc(crm)}</div>`;
+function crmLookup(prefix, explicit){
+  const crm=$('#'+prefix+'crm').value.replace(/\D/g,''), uf=$('#'+prefix+'uf').value, res=$('#'+prefix+'crmRes'), mw=$('#'+prefix+'medWrap');
+  if(crm.length<6 && !explicit){ res.innerHTML=''; mw.style.display=''; return; }
+  const nome = MEDICOS[crm];
+  if(nome){ res.innerHTML=crmOk(nome,uf,crm); mw.style.display='none'; $('#'+prefix+'medico').value=nome; }
+  else { res.innerHTML = crm ? `<div class="crm-no">CRM ${esc(crm)}-${esc(uf)} não encontrado na base. Confira o número ou digite o nome do(a) médico(a) abaixo.</div>` : ''; mw.style.display=''; }
+}
 function lerForm(prefix){
   const g = id => $('#'+prefix+id);
   return {nome:g('nome').value.trim(), doc:g('doc').value.trim(), nasc:g('nasc').value, tel:g('tel').value.trim(), status:g('status').value||'Ativo',
-    end:g('end').value.trim(), cancer:g('cancer').value.trim(), hosp:g('hosp').value.trim(), medico:g('medico').value.trim(),
+    end:g('end').value.trim(), cancer:readOutro(prefix,'cancer'), hosp:readOutro(prefix,'hosp'), crm:g('crm').value.replace(/\D/g,''), uf:g('uf').value, medico:(MEDICOS[g('crm').value.replace(/\D/g,'')]||g('medico').value.trim()),
     casa:Math.max(1, parseInt(g('casa').value)||1), criancas:g('criancas').getAttribute('aria-pressed')==='true', idosos:g('idosos').getAttribute('aria-pressed')==='true',
     needs:[...document.querySelectorAll('#'+prefix+'needs .need-chip[aria-pressed="true"]')].map(b=>b.textContent), obs:g('obs').value.trim()};
 }
@@ -772,7 +851,7 @@ function renderDetalhes(tab){
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px"><div class="pav" aria-hidden="true">${initial(p.nome)}</div>${statusBadge(p.status)}</div>
       <div class="row">${ICON.phone}<span class="sr">Telefone:</span>${esc(p.tel||'—')}</div>
       <div class="row">${ICON.home}<span class="sr">Endereço:</span>${esc(p.end||'—')}</div>
-      <div class="row">${ICON.doc}<span class="sr">Médico(a):</span>${esc(p.medico||'—')}</div>
+      <div class="row">${ICON.doc}<span class="sr">Médico(a):</span><span>${esc(p.medico||'—')}${p.crm?`<span class="obs" style="margin-top:0">CRM-${esc(p.uf||'SP')} ${esc(p.crm)}</span>`:''}</span></div>
     </div>
     <div class="card side-card"><h2>Família</h2><div><span class="big">${p.casa}</span><span style="font-size:14px;color:var(--ink-2)">pessoas na casa</span></div>
       <div class="pc-tags" style="margin-top:10px">${p.criancas?'<span class="tag">Crianças</span>':''}${p.idosos?'<span class="tag">Idosos</span>':''}</div></div>
@@ -788,11 +867,12 @@ function renderDetalhes(tab){
         <div class="ferr" id="noteTxt-err"></div>
         <div style="display:flex;justify-content:flex-end;margin-top:14px"><button class="btn btn-rose btn-sm" onclick="addNota()">${ICON.pen}Adicionar nota</button></div>
       </div>
-      <div class="timeline">${p.notas.map(n=>`<div class="card tl"><div class="meta"><span class="badge b-rose">${n.tipo}</span>${br(n.data)} · por ${esc(n.por)}</div><div style="font-size:14px">${esc(n.txt)}</div></div>`).join('') || '<div class="empty">Nenhuma nota registrada ainda.</div>'}</div>`;
+      <div class="timeline">${p.notas.map((n,k)=>`<div class="card tl"><div class="meta"><span class="badge ${n.auto?'b-grey':'b-rose'}">${n.tipo}</span>${br(n.data)} · por ${esc(n.por)}${n.editada?' · editada':''}
+        ${n.auto?'':`<span class="note-acts"><button onclick="editarNota(${k})" aria-label="Editar nota de ${br(n.data)}">Editar</button><button class="del" onclick="excluirNota(${k})" aria-label="Excluir nota de ${br(n.data)}">Excluir</button></span>`}</div><div style="font-size:14px">${esc(n.txt)}</div></div>`).join('') || '<div class="empty">Nenhuma nota registrada ainda.</div>'}</div>`;
   } else if(dtTab==='doa'){
     const rows = [...p.doacoes].sort((a,b)=>b.data.localeCompare(a.data));
     B.innerHTML = `<div class="card tbl-wrap tscroll"><table class="t"><caption class="sr">Entregas recebidas</caption><thead><tr><th style="background:var(--green-soft)">Data</th><th style="background:var(--green-soft)">Item entregue</th><th class="n" style="background:var(--green-soft)">Quantidade</th></tr></thead><tbody>
-      ${rows.length?rows.map(d=>`<tr><td>${br(d.data)}</td><td class="b"><span style="display:inline-flex;gap:8px;align-items:center">${ICON.truck}${esc(d.item)}</span></td><td class="n">${d.qtd}</td></tr>`).join(''):'<tr><td colspan="3" class="empty">Nenhuma entrega registrada.</td></tr>'}
+      ${rows.length?rows.map(d=>`<tr><td>${br(d.data)}</td><td class="b"><span style="display:inline-flex;gap:8px;align-items:center">${ICON.truck}${esc(d.item)}</span>${d.obs?`<span class="obs">Obs.: ${esc(d.obs)}</span>`:''}</td><td class="n">${d.qtd}</td></tr>`).join(''):'<tr><td colspan="3" class="empty">Nenhuma entrega registrada.</td></tr>'}
       </tbody></table></div>`;
   } else {
     B.innerHTML = `<div id="edSummary"></div>` + cadastroForm(p,'ed-') + `<div class="actions"><button class="btn btn-rose" onclick="salvarEdicao()">Salvar alterações</button></div>`;
@@ -811,12 +891,30 @@ const STATUS_EFFECT = {
 };
 $('#dtStatus').addEventListener('change', e=>{
   const p=S.pacientes.find(x=>x.id===curPac), old=p.status, nw=e.target.value;
-  const apply = ()=>{ p.status=nw; renderDetalhes(); toast(`Status de ${p.curto} alterado para ${nw}.`, ()=>{ p.status=old; if(current==='detalhes') renderDetalhes(); toast('Alteração de status desfeita.'); }); };
+  const apply = ()=>{ p.status=nw; const log={tipo:'Status',data:TODAY,por:'Ana Lúcia',txt:`Status alterado de "${old}" para "${nw}".`,auto:true}; p.notas.unshift(log); dtTab='pront'; renderDetalhes();
+    toast(`Status de ${p.curto} alterado para ${nw}.`, ()=>{ p.status=old; p.notas=p.notas.filter(x=>x!==log); if(current==='detalhes') renderDetalhes(); toast('Alteração de status desfeita.'); }); };
   if(nw==='Óbito' || nw==='Transferido'){
     modal(`Alterar status para "${nw}"?`, `<p><b>${esc(p.nome)}</b></p><p>${STATUS_EFFECT[nw]}</p>`,
-      [{label:'Cancelar',fn:()=>{ e.target.value=old; }},{label:`Confirmar: ${nw}`,cls:'btn-rose',fn:apply}]);
+      [{label:'Cancelar',cancel:true},{label:`Confirmar: ${nw}`,cls:'btn-rose',fn:apply}], {onCancel:()=>{ e.target.value=old; }});
   } else apply();
 });
+function editarNota(k){
+  const p=S.pacientes.find(x=>x.id===curPac), n=p.notas[k];
+  modal('Editar nota', `<div class="fg"><label class="f" for="edNota">Texto da nota (${esc(n.tipo)}, ${br(n.data)})</label><textarea class="inp" id="edNota">${esc(n.txt)}</textarea><div class="ferr" id="edNota-err"></div></div>`,
+    [{label:'Cancelar',cancel:true},{label:'Salvar nota',cls:'btn-rose',keep:true,fn:()=>{
+      const t=$('#edNota').value.trim(); if(!t){ setErr('edNota','A nota não pode ficar vazia. Para apagá-la, use "Excluir".'); return; }
+      const old=n.txt; n.txt=t; n.editada=true; closeModal(); renderDetalhes();
+      toast('Nota atualizada.', ()=>{ n.txt=old; n.editada=false; if(current==='detalhes') renderDetalhes(); toast('Edição desfeita.'); });
+    }}]);
+}
+function excluirNota(k){
+  const p=S.pacientes.find(x=>x.id===curPac), n=p.notas[k];
+  modal('Excluir nota?', `<p><b>${esc(n.tipo)} · ${br(n.data)}</b></p><p>"${esc(n.txt)}"</p><p>A nota será removida do acompanhamento.</p>`,
+    [{label:'Cancelar',cancel:true},{label:'Excluir nota',cls:'btn-danger',fn:()=>{
+      p.notas.splice(k,1); renderDetalhes();
+      toast('Nota excluída.', ()=>{ p.notas.splice(k,0,n); if(current==='detalhes') renderDetalhes(); toast('Nota restaurada.'); });
+    }}]);
+}
 function addNota(){
   const t = $('#noteTxt').value.trim();
   if(!t){ setErr('noteTxt','Digite o texto da nota para adicioná-la.'); $('#noteTxt').focus(); return; }
@@ -935,8 +1033,8 @@ function renderEstoque(){
 $('#estSearch').addEventListener('input', renderEstoque);
 
 /* ===================== REGISTRAR ENTREGA ===================== */
-function renderEntrega(){
-  const pSel = $('#saiPac').value, iSel = $('#saiItem').value;
+function renderEntrega(pacId){
+  const pSel = pacId ? String(pacId) : $('#saiPac').value, iSel = $('#saiItem').value;
   $('#saiPac').innerHTML = '<option value="">Selecione quem recebeu</option>' + S.pacientes.filter(p=>p.status!=='Óbito').map(p=>`<option value="${p.id}">${esc(p.nome)}</option>`).join('');
   $('#saiItem').innerHTML = '<option value="">Selecione o item</option>' + S.estoque.map((i,k)=>`<option value="${k}">${esc(i.nome)}</option>`).join('');
   $('#saiPac').value = pSel || ''; $('#saiItem').value = iSel || '';
@@ -959,8 +1057,9 @@ function confirmarEntrega(){
   const btn=$('#saiSave'); btn.disabled=true; setTimeout(()=>btn.disabled=false,1200);   // evita clique duplo
   const data = $('#saiData').value;
   it.qtd -= q;
-  const m = registrarMov({data, mov:'Entrega', item:it.nome, qtd:q, quem:p.curto, vol:'Ana Lúcia', pac:p.id});
-  p.doacoes.push({data, item:it.nome, qtd:q, hid:m.id});
+  const obs = $('#saiObs').value.trim();
+  const m = registrarMov({data, mov:'Entrega', item:it.nome, qtd:q, quem:p.curto, vol:'Ana Lúcia', pac:p.id, obs});
+  p.doacoes.push({data, item:it.nome, qtd:q, hid:m.id, obs});
   $('#saiQtd').value = 1; $('#saiObs').value=''; $('#saiPac').value=''; $('#saiItem').value='';
   renderEntrega();
   toast(`Entrega registrada: ${q}× ${it.nome} para ${p.curto}.`, ()=>{ desfazerMov(m); if(current==='entrega') renderEntrega(); toast('Entrega desfeita. O estoque voltou ao saldo anterior.'); });
@@ -972,7 +1071,7 @@ function renderHistorico(){
   if(de && ate && de > ate){ setErr('hiAte','A data final deve ser igual ou posterior à data inicial.'); $('#hiBody').innerHTML='<tr><td colspan="7" class="empty">Ajuste o período para ver as movimentações.</td></tr>'; return; }
   setErr('hiAte','');
   const list = sortedHist().filter(h=>(!t||h.mov===t) && (!de||h.data>=de) && (!ate||h.data<=ate));
-  $('#hiBody').innerHTML = list.length ? list.map(h=>`<tr class="${h.estornado?'voided':''}"><td class="m">${br(h.data)}</td><td>${movBadge(h.mov)}</td><td class="b">${esc(h.item)}</td><td class="n">${h.qtd}</td><td>${esc(h.quem)}</td><td class="m">${esc(h.vol)}</td>
+  $('#hiBody').innerHTML = list.length ? list.map(h=>`<tr class="${h.estornado?'voided':''}"><td class="m">${br(h.data)}</td><td>${movBadge(h.mov)}</td><td class="b">${esc(h.item)}${h.obs?`<span class="obs">Obs.: ${esc(h.obs)}</span>`:''}</td><td class="n">${h.qtd}</td><td>${esc(h.quem)}</td><td class="m">${esc(h.vol)}</td>
     <td>${h.mov==='Estorno'?'':h.estornado?'<span class="badge b-grey">Estornada</span>':`<button class="act" onclick="estornar(${h.id})" aria-label="Estornar ${h.mov.toLowerCase()} de ${h.qtd} ${esc(h.item)}">Estornar</button>`}</td></tr>`).join('') : '<tr><td colspan="7" class="empty">Nenhuma movimentação no período.</td></tr>';
 }
 ['#hiTipo','#hiDe','#hiAte'].forEach(s=>$(s).addEventListener('change', renderHistorico));
